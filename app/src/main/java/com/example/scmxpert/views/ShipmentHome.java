@@ -1,6 +1,5 @@
 package com.example.scmxpert.views;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -9,25 +8,23 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.se.omapi.Session;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.scmxpert.R;
 import com.example.scmxpert.base.BaseActivity;
 import com.example.scmxpert.fragment.DeliveredShipment;
-import com.example.scmxpert.fragment.FragmentOne;
-import com.example.scmxpert.fragment.GraphFragment;
 import com.example.scmxpert.fragment.LiveShipment;
-import com.example.scmxpert.fragment.MapFragment;
 import com.example.scmxpert.helper.SessionManager;
-import com.example.scmxpert.model.Shippment;
+import com.example.scmxpert.views.createShipment.CreateShipment;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -41,12 +38,19 @@ public class ShipmentHome extends BaseActivity implements View.OnClickListener, 
     Toolbar toolbar;
     public TextView live_count,deliver_count;
     SessionManager session;
-
+       Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_shipment_home);
         session = new SessionManager(getApplicationContext());
+/*
+        if(getIntent().getExtras() != null){
+            intent = getIntent();
+            Toast.makeText(this, "Value", Toast.LENGTH_SHORT).show();
+        }*/
+
+
         initializeView();
         setupTabIcons();
     }
@@ -72,10 +76,11 @@ public class ShipmentHome extends BaseActivity implements View.OnClickListener, 
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.create_shipment:
-                startActivity(new Intent(ShipmentHome.this,CreateShipment.class));
+                startActivity(new Intent(ShipmentHome.this, CreateShipment.class));
                 break;
 
             case R.id.filter:
+
                 startActivity(new Intent(ShipmentHome.this,FilterScreen.class));
                 break;
 
@@ -188,6 +193,7 @@ public class ShipmentHome extends BaseActivity implements View.OnClickListener, 
     public void showAlertDialog() {
         HashMap<String,String> user = session.getUserDetails();
         String user_name = user.get(SessionManager.USER_NAME);
+        String admin_name = user.get(SessionManager.PARTNER_NAME);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(user_name)
                 .setMessage(getString(R.string.logout))
@@ -203,4 +209,9 @@ public class ShipmentHome extends BaseActivity implements View.OnClickListener, 
         builder.create().show();
     }
 
+    @Override
+    public void onBackPressed() {
+       super.onBackPressed();
+        finishAffinity();
+    }
 }

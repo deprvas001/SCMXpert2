@@ -2,17 +2,13 @@ package com.example.scmxpert.repository;
 
 import android.app.Application;
 import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-
 import com.example.scmxpert.apiInterface.CompleteShipment;
 import com.example.scmxpert.model.CreateShipmentDrop;
-import com.example.scmxpert.model.CreateShipmentResponse;
 import com.example.scmxpert.model.GetRouteDetails;
 import com.example.scmxpert.model.ShipmentDetail;
 import com.example.scmxpert.model.Shippment;
-import com.example.scmxpert.model.UpdateEventPost;
 import com.example.scmxpert.service.RetrofitClientInstance;
 
 import java.util.List;
@@ -39,7 +35,6 @@ public class ShipmentRepository {
                     public void onResponse(Call<List<Shippment>> call, Response<List<Shippment>> response) {
                         Log.d(TAG, "onResponse response:: " + response);
                         if (response.body() != null) {
-
                             data.setValue(response.body());
                         }
                     }
@@ -67,7 +62,7 @@ public class ShipmentRepository {
 
                     @Override
                     public void onFailure(Call<List<ShipmentDetail>> call, Throwable t) {
-
+                             data.setValue(null);
                     }
                 });
         return data;
@@ -77,7 +72,7 @@ public class ShipmentRepository {
     //All drop down data
     public LiveData<CreateShipmentDrop> getAllDDData(String id){
         final MutableLiveData<CreateShipmentDrop> data = new MutableLiveData<>();
-        completeShipment.getDDData1(id)
+        completeShipment.getDDData1("SCM0001")
                 .enqueue(new Callback<CreateShipmentDrop>() {
                     @Override
                     public void onResponse(Call<CreateShipmentDrop> call, Response<CreateShipmentDrop> response) {

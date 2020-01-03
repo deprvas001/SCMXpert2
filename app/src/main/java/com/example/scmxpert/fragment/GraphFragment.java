@@ -6,11 +6,8 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SeekBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
@@ -19,20 +16,16 @@ import androidx.fragment.app.Fragment;
 import com.example.scmxpert.R;
 import com.example.scmxpert.apiInterface.CompleteShipment;
 import com.example.scmxpert.constants.ApiConstants;
-import com.example.scmxpert.model.CreateShipmentDrop;
 import com.example.scmxpert.model.DeviceTempData;
 import com.example.scmxpert.model.Shippment;
 import com.example.scmxpert.service.RetrofitClientInstance;
-import com.example.scmxpert.views.CreateShipment;
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
@@ -42,7 +35,7 @@ import com.github.mikephil.charting.utils.Utils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -50,13 +43,7 @@ import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 import lecho.lib.hellocharts.listener.LineChartOnValueSelectListener;
-import lecho.lib.hellocharts.model.Axis;
-import lecho.lib.hellocharts.model.AxisValue;
-import lecho.lib.hellocharts.model.Line;
-import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
-import lecho.lib.hellocharts.model.Viewport;
-import lecho.lib.hellocharts.view.LineChartView;
 
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
@@ -77,17 +64,17 @@ public class GraphFragment extends Fragment implements LineChartOnValueSelectLis
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.activity_shipment_graph,container,false);
-        mChart = view.findViewById(R.id.linechart);
+        mChart =  view.findViewById(R.id.lineChart);
 
         if(getActivity().getIntent()!=null){
             shippment = (Shippment) getActivity().getIntent().getSerializableExtra(ApiConstants.SHIPMENT);
         }
+
         mChart.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
             @Override
             public void onValueSelected(Entry e, Highlight h) {
-            //  float value =  e.getX();
-
-              //  Toast.makeText(getActivity(), h.toString(), Toast.LENGTH_SHORT).show();
+                //  float value =  e.getX();
+                //  Toast.makeText(getActivity(), h.toString(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -101,31 +88,32 @@ public class GraphFragment extends Fragment implements LineChartOnValueSelectLis
         mChart.setPinchZoom(true);
         mChart.setDoubleTapToZoomEnabled(true);
         mChart.setHorizontalScrollBarEnabled(true);
-        mChart.getViewPortHandler().setMaximumScaleX(5f);
-        mChart.getViewPortHandler().setMaximumScaleY(5f);
+        mChart.getViewPortHandler().setMaximumScaleX(1.5f);
+        mChart.getViewPortHandler().setMaximumScaleY(1.f);
 
-        getTempData();
+        if(shippment.getWaypoint()!=null){
+            getTempData();
+        }
+
+
 
       /*  MyMarkerView mv = new MyMarkerView(getApplicationContext(), R.layout.custom_marker_view);
         mv.setChartView(mChart);
         mChart.setMarker(mv);*/
-
-//String setter in x-Axis
-
-
+      //String setter in x-Axis
         return view;
     }
 
     public void renderData() {
-        LimitLine llXAxis = new LimitLine(20f, "Index 10");
-        llXAxis.setLineWidth(2f);
+        LimitLine llXAxis = new LimitLine(0.0f, "Index 10");
+        llXAxis.setLineWidth(1f);
         llXAxis.enableDashedLine(10f, 10f, 0f);
         llXAxis.setLabelPosition(LimitLine.LimitLabelPosition.RIGHT_BOTTOM);
         llXAxis.setTextSize(10f);
 
         XAxis xAxis = mChart.getXAxis();
         //  xAxis.enableGridDashedLine(10f, 10f, 0f);
-   //    xAxis.setAxisMaximum(10);
+            xAxis.setAxisMaximum(10f);
         xAxis.setAxisMinimum(0f);
         xAxis.setDrawLimitLinesBehindData(true);
         xAxis.setGranularity(0f);
@@ -149,8 +137,27 @@ public class GraphFragment extends Fragment implements LineChartOnValueSelectLis
         leftAxis.removeAllLimitLines();
        /* leftAxis.addLimitLine(ll1);
         leftAxis.addLimitLine(ll2);*/
-     //   leftAxis.setAxisMaximum(60f);
+        //   leftAxis.setAxisMaximum(60f);
+
         leftAxis.setAxisMinimum(0f);
+        leftAxis.setAxisMaximum(170f);
+        leftAxis.setDrawGridLines(true);
+        leftAxis.setGranularityEnabled(true);
+      //  leftAxis.setAxisMaximum(80f);
+
+        /*if (yAxisValues != null || yAxisValues.size() != 0) {
+            // create a new list to avoid modification
+            // in the original list
+         List<Float> internal_temp_list  =  getList(yAxisValues);
+            // sort list in natural order
+            Collections.sort(internal_temp_list);
+
+            // first element in the sorted list
+            // would be minimum
+            leftAxis.setAxisMinimum(internal_temp_list.get(0));
+        }else{
+            leftAxis.setAxisMinimum(0f);
+        }*/
         //  leftAxis.enableGridDashedLine(10f, 10f, 0f);
         leftAxis.setDrawZeroLine(false);
 
@@ -169,19 +176,6 @@ public class GraphFragment extends Fragment implements LineChartOnValueSelectLis
             values.add(new Entry(i, (float) Float.parseFloat(yAxisValues.get(i))));
         }
 
-     //   values.subList(0,12);
-       /* values.add(new Entry(1, (float) 55.4));
-        values.add(new Entry(2, (float) 58.3));
-        values.add(new Entry(3, (float) 30.3));
-        values.add(new Entry(4, (float) 20.1));
-        values.add(new Entry(5, (float) 40.8));
-        values.add(new Entry(6, (float) 51.2));
-        values.add(new Entry(7, (float) 53.3));
-        values.add(new Entry(8, (float) 65.55));
-        values.add(new Entry(9, (float) 35.15));
-        values.add(new Entry(10, (float) 45.25));
-        values.add(new Entry(11, (float) 55.65));
-        values.subList(0,12);*/
 
         LineDataSet set1;
         if (mChart.getData() != null &&
@@ -217,6 +211,8 @@ public class GraphFragment extends Fragment implements LineChartOnValueSelectLis
             dataSets.add(set1);
             LineData data = new LineData(dataSets);
             mChart.setData(data);
+
+            mChart.invalidate();
         }
     }
 
@@ -232,7 +228,6 @@ public class GraphFragment extends Fragment implements LineChartOnValueSelectLis
 
     private void getTempData() {
 
-
         CompleteShipment apiService = RetrofitClientInstance.getClient(getActivity()).create(CompleteShipment.class);
         disposable.add(
                 apiService.getDeviceDataTemp(shippment.getShipment_id())
@@ -241,22 +236,31 @@ public class GraphFragment extends Fragment implements LineChartOnValueSelectLis
                         .subscribeWith(new DisposableSingleObserver<List<DeviceTempData>>() {
                             @Override
                             public void onSuccess(List<DeviceTempData> deviceTempData) {
-                                     xAxisValues.clear();
-                                     yAxisValues.clear();
-                                for(int i=0;i<deviceTempData.size();i++){
-
-                                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-                                    SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+                                xAxisValues.clear();
+                                yAxisValues.clear();
+                                if(deviceTempData.size()>0){
+                                    List<DeviceTempData> last_ten_item = deviceTempData.subList(deviceTempData.size()-10, deviceTempData.size());
 
                                     try{
-                                        xAxisValues.add(sdf1.format(sdf.parse(deviceTempData.get(i).getDate())));
-                                    }catch (ParseException e) {
+                                        for(int i=0;i<last_ten_item.size();i++){
+
+                                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                                            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+
+                                            try{
+                                                xAxisValues.add(sdf1.format(sdf.parse(last_ten_item.get(i).getDate())));
+                                            }catch (ParseException e) {
+                                                e.printStackTrace();
+                                            }
+                                            yAxisValues.add(last_ten_item.get(i).getInternal_temp());
+
+                                        }
+                                        renderData();
+                                    }catch (Exception e){
                                         e.printStackTrace();
                                     }
-                                    yAxisValues.add(deviceTempData.get(i).getInternal_temp());
-
                                 }
-                                renderData();
+
                             }
 
                             @Override
@@ -269,6 +273,26 @@ public class GraphFragment extends Fragment implements LineChartOnValueSelectLis
         );
 
 
+    }
+
+
+    List<Float> getList(List<String> stringList)
+    {
+        List<Float> floatList = new ArrayList<>();
+
+        for (int i = 0; i < stringList.size(); i++)
+        {
+            Float number = Float.valueOf(stringList.get(i));
+            floatList.add(number);
+        }
+
+        return floatList;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+       /* disposable.clear();*/
     }
 }
 

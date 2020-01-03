@@ -58,7 +58,7 @@
     <string name="to">To</string>
     <string name="event_reference">Event Reference</string>
     <string name="event_description">Event Description</string>
-    <string name="delete_event">Delete Event</string>
+    <string name="delete_event">Cancel Event</string>
     <string name="update">Update Event</string>
     <string name="reset">Reset</string>
     <string name="customer_id">Customer ID</string>
@@ -81,7 +81,7 @@
     <string name="partner_name_empty">Partner Name field can not be empty.</string>
     <string name="shipment_number_empty">Shipment Number field can not be empty.</string>
     <string name="description_empty">Description field can not be empty.</string>
-    <string name="type_reference_empty">Please Select Type Of Reference</string>
+    <string name="type_reference_empty">Select Type Of Reference</string>
     <string name="route_empty">Please Select Route Details.</string>
     <string name="device_empty">Please Select Device.</string>
     <string name="expect_date_empty">Please Select Expected Del.Date</string>
@@ -92,10 +92,12 @@
     <string name="select_reference">Select Type Reference</string>
     <string name="select_partner">Select Partner</string>
     <string name="event_id_error">Event Id field can not be empty.</string>
+    <string name="event_description_error">Event Description can not be empty</string>
+    <string name="event_reference_error">Event reference can not be empty</string>
     <string name="event_type_error">Event Type field can not be empty.</string>
     <string name="event_refer_error">Event Reference field can not be empty.</string>
     <string name="event_descrp_error">Event Description field can not be empty.</string>
-    <string name="partner_id_empty">Please Select Partner</string>
+    <string name="partner_id_empty">Select Partner</string>
     <string name="completed">Completed</string>
     <string name="status">Status</string>
     <string name="message">messasge</string>
@@ -112,4 +114,14 @@
     <string name="draft">Draft</string>
     <string name="inactive">InActive</string>
     <string name="update_route">Update</string>
+    <string name="invalid_credentails">User ID and Password are incorrect.</string>
+    <string name="email_field_empty">Email field is empty.</string>
+    <string name="select_location">Select Receiving Location</string>
+    <string name="return_location">Select Return Location</string>
+    <string name="receive_location_error">Select Receiving Location</string>
+    <string name="delete">DELETE</string>
+    <string name="event_completed">All Events completed</string>
+    <string name="update_event_status"> No Event to update please click on complete button to complete event</string>
+    <string name="complete_status_event">Right now you can only update event</string>
+    <string name="internal_server_error">Internal Server Error</string>
 </resources>

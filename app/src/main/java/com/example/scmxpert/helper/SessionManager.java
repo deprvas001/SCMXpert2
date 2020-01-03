@@ -3,9 +3,8 @@ package com.example.scmxpert.helper;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.se.omapi.Session;
 
-import com.example.scmxpert.views.LoginScreen;
+import com.example.scmxpert.views.login.LoginScreen;
 
 import java.util.HashMap;
 
@@ -19,6 +18,7 @@ public class SessionManager {
     public static final String KEY_NAME = "name";
     public static final String USER_NAME ="user_name";
     public static final String PARTNER_NAME = "partner_name";
+    public static final String CUSTOMER_ID = "customer_id";
     public static final String TOKEN = "token";
 
 
@@ -29,11 +29,12 @@ public class SessionManager {
     }
 
     //Create Login Session
-    public void createLoginSession(String user_name,String partner,String token){
+    public void createLoginSession(String user_name,String partner,String token,String customer_id){
         editor.putBoolean(IS_LOGIN,true);
         editor.putString(USER_NAME,user_name);
         editor.putString(PARTNER_NAME,partner);
         editor.putString(TOKEN,token);
+        editor.putString(CUSTOMER_ID,customer_id);
         editor.commit();
     }
 
@@ -69,6 +70,7 @@ public class SessionManager {
         user.put(USER_NAME,pref.getString(USER_NAME,null));
         user.put(PARTNER_NAME,pref.getString(PARTNER_NAME,null));
         user.put(TOKEN,pref.getString(TOKEN,null));
+        user.put(CUSTOMER_ID,pref.getString(CUSTOMER_ID,null));
 
         return  user;
     }

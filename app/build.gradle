@@ -61,7 +61,7 @@ dependencies {
     implementation "com.squareup.retrofit2:adapter-rxjava2:${retrofit_version}"
     implementation "com.google.android.gms:play-services-maps:${play_services}"
     implementation 'com.google.android.material:material:1.0.0'
-    implementation 'com.github.lecho:hellocharts-library:1.5.8@aar'
+    implementation 'com.github.lecho:hellocharts-library:1.5.8'
     implementation  "com.squareup.okhttp3:okhttp:4.2.1"
     implementation  "com.squareup.okhttp3:logging-interceptor:4.2.1"
     testImplementation 'junit:junit:4.12'

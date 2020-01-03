@@ -41,11 +41,11 @@
             android:name=".views.FilterScreen"
             android:theme="@style/AppTheme1" />
         <activity
-            android:name=".views.CreateShipment"
+            android:name=".views.createShipment.CreateShipment"
             android:theme="@style/AppTheme1"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".views.UpdateEvent"
+            android:name=".views.updateEvent.UpdateEvent"
             android:theme="@style/AppTheme1" />
         <activity
             android:name=".views.CompleteShipmentFill"
@@ -77,10 +77,10 @@
             android:name=".views.HomeScreen"
             android:theme="@style/AppTheme1" />
         <activity
-            android:name=".views.ForgotPassword"
+            android:name=".views.forgotPassword.ForgotPassword"
             android:theme="@style/AppTheme1" />
         <activity
-            android:name=".views.LoginScreen"
+            android:name=".views.login.LoginScreen"
             android:theme="@style/AppTheme1">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

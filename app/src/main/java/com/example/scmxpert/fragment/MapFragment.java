@@ -1,66 +1,31 @@
 package com.example.scmxpert.fragment;
 
-import android.Manifest;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DefaultItemAnimator;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.scmxpert.R;
-import com.example.scmxpert.adapter.ShipmentDetailAdapter;
-import com.example.scmxpert.apiInterface.CompleteShipment;
 import com.example.scmxpert.constants.ApiConstants;
-import com.example.scmxpert.helper.SaveSharedPreference;
-import com.example.scmxpert.map.Map;
 import com.example.scmxpert.model.ShipmentDetail;
 import com.example.scmxpert.model.Shippment;
 import com.example.scmxpert.model.WayPoint;
-import com.example.scmxpert.views.HomeScreen;
-import com.example.scmxpert.views.ShipmentDetails;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
-import com.google.gson.Gson;
-
 import org.json.JSONArray;
 import org.json.JSONException;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback{
     private GoogleMap googleMap;
@@ -99,8 +64,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                     String longt = innerArray.get(1).toString();
                     userList.add(point);
 
-                    createMarker(Double.parseDouble(lat),Double.parseDouble(longt),shippment.getShipment_id());
-
+                 //   createMarker(Double.parseDouble(lat),Double.parseDouble(longt),shippment.getShipment_id());
                 }
 
             } catch (JSONException e) {
@@ -108,17 +72,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             }
         }
 
-        for (int k=0;k<userList.size();k++){
-            String lat = userList.get(k).getLat();
-            String longt = userList.get(k).getLongt();
-            LatLng latLng = new LatLng(Double.parseDouble(lat),Double.parseDouble(longt));
+        try {
+            if(userList!=null){
+                for (int k=0;k<userList.size();k++){
+                    String lat = userList.get(k).getLat();
+                    String longt = userList.get(k).getLongt();
+                    LatLng latLng = new LatLng(Double.parseDouble(lat),Double.parseDouble(longt));
 
-            if(!route_array.contains(latLng)){
-                route_array.add(latLng);
+                    if(!route_array.contains(latLng)){
+                        route_array.add(latLng);
+                    }
+                }
+                if(route_array.size()>0)
+                drawLine(route_array,shippment.getShipment_id());
             }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        drawLine(route_array);
-
 
 
 
@@ -166,7 +136,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         CameraPosition googlePlex = CameraPosition.builder()
                 .target(position)
-                .zoom(5)
+                .zoom(8)
                 .bearing(0)
                 .tilt(45)
                 .build();
@@ -183,10 +153,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
-        getShipmentDetails();
+        if(shippment !=null){
+            getShipmentDetails();
+        }
+
     }
 
-    public void drawLine(List<LatLng> points) {
+    public void drawLine(List<LatLng> points,String shipment_id) {
+
+       /* List<LatLng> source_destination = new ArrayList<>();
+       source_destination.add(points.get(0));
+       source_destination.add(points.get(points.size()-1));*/
+
+       for(int i=0;i<points.size();i++){
+
+           LatLng latLng = points.get(i);
+           double lat = latLng.latitude;
+           double longt = latLng.longitude;
+           createMarker(lat,longt,shipment_id);
+       }
         if (points == null) {
             Log.e("Draw Line", "got null as parameters");
             return;
@@ -196,4 +181,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         line.setPoints(points);
     }
+
+
 }

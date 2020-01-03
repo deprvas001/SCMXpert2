@@ -7,29 +7,27 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.example.scmxpert.R;
 import com.example.scmxpert.adapter.ShipmentAdapter;
 import com.example.scmxpert.apiInterface.CompleteShipment;
 import com.example.scmxpert.constants.ApiConstants;
-import com.example.scmxpert.map.Map;
+import com.example.scmxpert.helper.SessionManager;
 import com.example.scmxpert.model.Shippment;
+import com.example.scmxpert.model.filter.FilterItemModel;
 import com.example.scmxpert.service.RetrofitClientInstance;
 import com.example.scmxpert.viewClick.RecyclerTouchListener;
 import com.example.scmxpert.views.MapHome;
 import com.example.scmxpert.views.ShipmentDetails;
 import com.example.scmxpert.views.ShipmentHome;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -50,10 +48,16 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
     private FloatingActionButton fab;
     private SharedPreferences.Editor editor;
     private SharedPreferences sp;
+    SessionManager session;
+    private String user_name = "";
+    private String partner_name = "";
+    private String customer_id="";
+    private String token = "";
     SwipeRefreshLayout swipeRefresh;
     private ArrayList<Shippment> liveList = new ArrayList<>();
     private CompositeDisposable disposable = new CompositeDisposable();
     private ArrayList<Shippment> deliverdList = new ArrayList<>();
+    int live_count =0,deliver_count=0;
     public LiveShipment() {
     }
 
@@ -63,6 +67,7 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
         // Inflate the layout for this fragment
         view = inflater.inflate(R.layout.live_shipment, container, false);
         initializeView();
+
         getAllShipment();
 
         mAdapter = new ShipmentAdapter(liveList);
@@ -107,18 +112,26 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
         editor = sp.edit();
         fab.setImageResource(R.drawable.map_show);
         fab.setOnClickListener(this);
+
+        session = new SessionManager(getActivity());
+        session.checkLogin();
+        HashMap<String, String> user = session.getUserDetails();
+        user_name = user.get(SessionManager.USER_NAME);
+        partner_name = user.get(SessionManager.PARTNER_NAME);
+        customer_id = user.get(SessionManager.CUSTOMER_ID);
+        token = user.get(SessionManager.TOKEN);
     }
 
 
     private void getAllShipment() {
+
         swipeRefresh.setRefreshing(true);
-      //  ((ShipmentHome)getActivity()).showProgressDialog(getResources().getString(R.string.loading));
-        final String customer_id = "SCM0002-A00001";
-        final String partner = "BP0001";
+    //    ((ShipmentHome)getActivity()).showProgressDialog(getResources().getString(R.string.loading));
+
 
         CompleteShipment apiService = RetrofitClientInstance.getClient(getActivity()).create(CompleteShipment.class);
         disposable.add(
-                apiService.getAllShipmentDetails()
+                apiService.getAllShipmentDetails(customer_id)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(new DisposableSingleObserver<List<Shippment>>() {
@@ -127,9 +140,9 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
                                swipeRefresh.setRefreshing(false);
                              //   ((ShipmentHome)getActivity()).hideProgressDialog();
 
-                                editor.putString(CUSTOMER_NAME, customer_id);
+                              /*  editor.putString(CUSTOMER_NAME, customer_id);
                                 editor.putString(CREATED_BY, partner);
-                                editor.apply();
+                                editor.apply();*/
 
                                 deliverdList.clear();
                                 liveList.clear();
@@ -138,17 +151,54 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
                                         String status = shippment.getDelivery_status();
                                         if(status !=null){
                                             if(!status.equals(getString(R.string.deliver)) ){
-                                                liveList.add(shippment);
-                                            }else {
-                                                deliverdList.add(shippment);
+
+                                                if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
+                                                    Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
+                                                    FilterItemModel itemModel = bundle.getParcelable("filter_data");
+
+                                                    if(shippment.getRoute_form().equals(itemModel.getFrom()) ||
+                                                            shippment.getRoute_to().equals(itemModel.getTo()) ||
+                                                            shippment.getGoods_desc().equals(itemModel.getGoods()) ||
+                                                            shippment.getDevice_id().equals(itemModel.getDevice()) ||
+                                                            shippment.getType_reference().equals(itemModel.getReference()) ||
+                                                            shippment.getDepartments().equals(itemModel.getDep_type())
+                                                            ){
+                                                        liveList.add(shippment);
+                                                    }
+                                                }else{
+                                                    liveList.add(shippment);
+                                                }
                                             }
+                                            else {
+
+                                                if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
+                                                    Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
+                                                    FilterItemModel itemModel = bundle.getParcelable("filter_data");
+
+                                                    if(shippment.getRoute_form().equals(itemModel.getFrom()) ||
+                                                            shippment.getRoute_to().equals(itemModel.getTo()) ||
+                                                            shippment.getGoods_desc().equals(itemModel.getGoods()) ||
+                                                            shippment.getDevice_id().equals(itemModel.getDevice()) ||
+                                                            shippment.getType_reference().equals(itemModel.getReference()) ||
+                                                            shippment.getDepartments().equals(itemModel.getDep_type())
+                                                    ){
+                                                        deliverdList.add(shippment);
+                                                    }
+                                                }else {
+
+                                                    deliverdList.add(shippment);
+
+                                                }
+                                                }
+                                        }else{
+                                            liveList.add(shippment);
                                         }
                                         }catch (Exception e){
                                         e.printStackTrace();
                                     }
                                 }
-                                ((ShipmentHome)getActivity()).live_count.setText(String.valueOf(liveList.size()));
                                 ((ShipmentHome)getActivity()).deliver_count.setText(String.valueOf(deliverdList.size()));
+                                ((ShipmentHome)getActivity()).live_count.setText(String.valueOf(liveList.size()));
                                 mAdapter.notifyDataSetChanged();
                             }
 
@@ -165,6 +215,7 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
 
     @Override
     public void onRefresh() {
+        ((ShipmentHome)getActivity()).getIntent().removeExtra("filter_data");
         getAllShipment();
     }
 
@@ -173,4 +224,5 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
         super.onDestroy();
         disposable.dispose();
     }
+
 }

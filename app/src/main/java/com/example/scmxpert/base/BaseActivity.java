@@ -11,6 +11,10 @@ import android.os.Bundle;
 
 import com.example.scmxpert.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 public class BaseActivity extends AppCompatActivity {
 
     ProgressDialog progressDialog;
@@ -42,6 +46,12 @@ public class BaseActivity extends AppCompatActivity {
         builder.create().show();
     }
 
+    public String getDatetime() {
+        Calendar c = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss Z", Locale.ENGLISH);
+        String timezone = sdf.format(c.getTime());
+        return timezone;
+    }
     public boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager = ((ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
         return connectivityManager.getActiveNetworkInfo() != null && connectivityManager.getActiveNetworkInfo().isConnected();

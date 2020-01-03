@@ -18,8 +18,10 @@ import com.example.scmxpert.R;
 import com.example.scmxpert.adapter.ShipmentAdapter;
 import com.example.scmxpert.apiInterface.CompleteShipment;
 import com.example.scmxpert.constants.ApiConstants;
+import com.example.scmxpert.helper.SessionManager;
 import com.example.scmxpert.map.Map;
 import com.example.scmxpert.model.Shippment;
+import com.example.scmxpert.model.filter.FilterItemModel;
 import com.example.scmxpert.service.RetrofitClientInstance;
 import com.example.scmxpert.viewClick.RecyclerTouchListener;
 import com.example.scmxpert.views.MapHome;
@@ -28,6 +30,7 @@ import com.example.scmxpert.views.ShipmentHome;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -43,9 +46,16 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
     private ShipmentAdapter mAdapter;
     private SwipeRefreshLayout swipeRefresh;
     FloatingActionButton fab;
+    SessionManager session;
+    private String user_name = "";
+    private String partner_name = "";
+    private String customer_id="";
+    private String token = "";
     private CompositeDisposable disposable = new CompositeDisposable();
     private ArrayList<Shippment> deliverdList = new ArrayList<>();
     private ArrayList<Shippment> liveList = new ArrayList<>();
+    int live_count =0,deliver_count=0;
+
     public DeliveredShipment(){
     }
 
@@ -86,15 +96,6 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.fab:
-              /*   ArrayList<Object> waveList1 = new ArrayList<>();
-                 for (Shippment shippment:deliverdList){
-                     waveList1.add(shippment.getWaypoint());
-                 }
-                Bundle b = new Bundle();
-                b.putSerializable(ApiConstants.WAVE_POINT, waveList1);
-                Intent intent = new Intent(getActivity(), Map.class);
-                intent.putExtras(b);
-                startActivity(intent);*/
                 startActivity(new Intent(getActivity(), MapHome.class));
                 break;
         }
@@ -106,6 +107,14 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
         swipeRefresh = view.findViewById(R.id.swiperefresh);
         fab.setImageResource(R.drawable.map_show);
         fab.setOnClickListener(this);
+
+        session = new SessionManager(getActivity());
+        session.checkLogin();
+        HashMap<String, String> user = session.getUserDetails();
+        user_name = user.get(SessionManager.USER_NAME);
+        partner_name = user.get(SessionManager.PARTNER_NAME);
+        customer_id = user.get(SessionManager.CUSTOMER_ID);
+        token = user.get(SessionManager.TOKEN);
     }
 
     private void getAllShipment() {
@@ -113,7 +122,7 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
       //  ((ShipmentHome)getActivity()).showProgressDialog(getResources().getString(R.string.loading));
         CompleteShipment apiService = RetrofitClientInstance.getClient(getActivity()).create(CompleteShipment.class);
         disposable.add(
-                apiService.getAllShipmentDetails()
+                apiService.getAllShipmentDetails(customer_id)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(new DisposableSingleObserver<List<Shippment>>() {
@@ -128,11 +137,45 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
                                         String status = shippment.getDelivery_status();
                                         if(status !=null){
                                             if(shippment.getDelivery_status().equals(getString(R.string.deliver))){
-                                                deliverdList.add(shippment);
+
+                                                if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
+                                                    Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
+                                                    FilterItemModel itemModel = bundle.getParcelable("filter_data");
+
+                                                    if(shippment.getRoute_form().equals(itemModel.getFrom()) ||
+                                                       shippment.getRoute_to().equals(itemModel.getTo()) ||
+                                                            shippment.getGoods_desc().equals(itemModel.getGoods()) ||
+                                                            shippment.getDevice_id().equals(itemModel.getDevice()) ||
+                                                            shippment.getType_reference().equals(itemModel.getReference()) ||
+                                                            shippment.getDepartments().equals(itemModel.getDep_type())){
+                                                        deliverdList.add(shippment);
+                                                    }
+                                                }else {
+                                                    deliverdList.add(shippment);
+                                                }
 
                                             }else{
-                                                liveList.add(shippment);
+                                                if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
+                                                    Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
+                                                    FilterItemModel itemModel = bundle.getParcelable("filter_data");
+
+                                                    if(shippment.getRoute_form().equals(itemModel.getFrom()) ||
+                                                            shippment.getRoute_to().equals(itemModel.getTo()) ||
+                                                            shippment.getGoods_desc().equals(itemModel.getGoods()) ||
+                                                            shippment.getDevice_id().equals(itemModel.getDevice()) ||
+                                                            shippment.getType_reference().equals(itemModel.getReference()) ||
+                                                            shippment.getDepartments().equals(itemModel.getDep_type())
+                                                    ){
+                                                        liveList.add(shippment);
+                                                    }
+                                                }else {
+
+                                                    liveList.add(shippment);
+
+                                                }
                                             }
+                                        }else{
+                                            liveList.add(shippment);
                                         }
                                     }catch (Exception e){
                                         e.printStackTrace();
@@ -156,6 +199,7 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
 
     @Override
     public void onRefresh() {
+        ((ShipmentHome)getActivity()).getIntent().removeExtra("filter_data");
         getAllShipment();
     }
 

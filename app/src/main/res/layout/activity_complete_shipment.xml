@@ -64,6 +64,8 @@
                     android:padding="10dp"
                     android:textSize="14sp"
                     android:gravity="center_vertical"
+                    android:editable="false"
+                    android:textColor="@color/shipment_detail"
                     android:singleLine="true"
                     android:background="@drawable/edit_background" />
 
@@ -85,9 +87,37 @@
                     android:layout_height="50dp"
                     android:padding="10dp"
                     android:textSize="14sp"
+                    android:editable="false"
+                    android:textColor="@color/shipment_detail"
                     android:singleLine="true"
                     android:background="@drawable/edit_background"
                     />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginBottom="20dp"
+                android:hint="@string/partner"
+                android:textColorHint="@android:color/black">
+
+                <EditText
+                    android:id="@+id/partner_name_edt"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@drawable/edit_background"
+                    android:gravity="center_vertical"
+                    android:padding="10dp"
+                    android:editable="false"
+                    android:focusable="false"
+                    android:textColor="@color/shipment_detail"
+                    android:singleLine="true"
+                    android:textSize="14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -98,6 +128,7 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="15dp"
+                android:visibility="gone"
                 android:textColorHint="@android:color/black"
                 android:hint="@string/partner">
             </TextView>
@@ -107,15 +138,15 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/edit_background"
                 android:layout_marginLeft="20dp"
-
+                android:visibility="gone"
                 android:layout_marginRight="20dp">
+
                 <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/complete_shipment_partner"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:padding="10dp"
-                    android:singleLine="true"
-                    />
+                    android:singleLine="true" />
 
             </RelativeLayout>
 
@@ -139,6 +170,7 @@
 
                 android:layout_marginRight="20dp">
                 <androidx.appcompat.widget.AppCompatSpinner
+                    android:id="@+id/receiving_location"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:padding="10dp"
@@ -164,6 +196,7 @@
                     android:padding="10dp"
                     android:textSize="14sp"
                     android:singleLine="true"
+                    android:textColor="@color/shipment_detail"
                     android:background="@drawable/edit_background"
                     />
 
@@ -211,6 +244,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="80dp"
                     android:paddingTop="20dp"
+                    android:textColor="@color/shipment_detail"
                     android:textSize="14sp"
                     android:paddingLeft="10dp"
                     android:gravity="top"
@@ -240,7 +274,7 @@
                 android:layout_marginBottom="20dp"
                 android:layout_marginRight="20dp">
                 <androidx.appcompat.widget.AppCompatSpinner
-
+                    android:id="@+id/device_return_location"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
                     android:padding="10dp"

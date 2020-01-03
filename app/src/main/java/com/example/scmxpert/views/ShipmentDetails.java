@@ -50,6 +50,7 @@ public class ShipmentDetails extends BaseActivity implements View.OnClickListene
         toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.back_arrow));
         viewPager = (CustomViewPager) findViewById(R.id.viewpager);
         viewPager.setEnableSwipe(false);
+        viewPager.setOffscreenPageLimit(0);
         setupViewPager(viewPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -167,6 +168,8 @@ public class ShipmentDetails extends BaseActivity implements View.OnClickListene
                 break;
         }
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

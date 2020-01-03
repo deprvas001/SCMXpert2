@@ -3,7 +3,7 @@ package com.example.scmxpert.model;
 import com.google.gson.annotations.SerializedName;
 
 public class ApiResponse {
-    @SerializedName("messasge")
+    @SerializedName("message")
     private String message;
     @SerializedName("Status")
     private Boolean status;

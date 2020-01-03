@@ -41,7 +41,16 @@ public class Shippment implements Serializable {
     @SerializedName("wayPoints")
     private List<Object> waypoint;
 
+    @SerializedName("event_status")
+    private String status_progress;
 
+    public String getStatus_progress() {
+        return status_progress;
+    }
+
+    public void setStatus_progress(String status_progress) {
+        this.status_progress = status_progress;
+    }
 
     public List<Object> getWaypoint() {
         return waypoint;

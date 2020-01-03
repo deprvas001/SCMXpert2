@@ -21,6 +21,8 @@ public class ShipmentDetail {
     private String longitude;
     @SerializedName("latitude")
     private String latitdue;
+    @SerializedName("event_Status")
+    private String event_status;
 
     public String getLongitude() {
         return longitude;
@@ -39,7 +41,8 @@ public class ShipmentDetail {
     }
 
     public ShipmentDetail(String id, String device_id, String internal_tmp, String event_name,
-                          String battery, String report_type, String mode_of, String longitude, String latitdue){
+                          String battery, String report_type, String mode_of,
+                          String longitude, String latitdue,String event_status){
         this.id= id;
         this.device_id = device_id;
         this.internal_tmp = internal_tmp;
@@ -49,6 +52,7 @@ public class ShipmentDetail {
         this.mode_of = mode_of;
         this.longitude = longitude;
         this.longitude = latitdue;
+        this.event_status = event_status;
     }
 
     public String getId() {
@@ -105,5 +109,13 @@ public class ShipmentDetail {
 
     public void setMode_of(String mode_of) {
         this.mode_of = mode_of;
+    }
+
+    public String getEvent_status() {
+        return event_status;
+    }
+
+    public void setEvent_status(String event_status) {
+        this.event_status = event_status;
     }
 }

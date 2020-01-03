@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,13 +18,11 @@ import com.example.scmxpert.base.BaseActivity;
 import com.example.scmxpert.map.Map;
 import com.example.scmxpert.model.Shippment;
 import com.example.scmxpert.viewClick.RecyclerTouchListener;
+import com.example.scmxpert.views.createShipment.CreateShipment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
-import org.json.JSONArray;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import retrofit2.Call;
@@ -125,7 +122,7 @@ public class HomeScreen extends BaseActivity implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.create_shipment:
-                startActivity(new Intent(HomeScreen.this,CreateShipment.class));
+                startActivity(new Intent(HomeScreen.this, CreateShipment.class));
                 break;
 
             case R.id.filter:

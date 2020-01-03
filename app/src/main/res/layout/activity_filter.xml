@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout  xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:tools="http://schemas.android.com/tools">
+<RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -45,7 +46,73 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
-                    <com.google.android.material.textfield.TextInputLayout
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_weight="1"
+                        android:hint="@string/from"
+                        android:textColorHint="@android:color/black"/>
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="15dp"
+                        android:layout_marginRight="20dp"
+                        android:hint="@string/to"
+                        android:layout_weight="1"
+                        android:textColorHint="@android:color/black"/>
+
+                </LinearLayout>
+
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/edit_background">
+
+                        <androidx.appcompat.widget.AppCompatSpinner
+                            android:id="@+id/from_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:singleLine="true" />
+
+                    </RelativeLayout>
+
+
+                    <RelativeLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginRight="20dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/edit_background">
+
+                        <androidx.appcompat.widget.AppCompatSpinner
+                            android:id="@+id/to_spinner"
+                            android:layout_width="match_parent"
+                            android:layout_height="50dp"
+                            android:singleLine="true" />
+
+                    </RelativeLayout>
+
+
+
+
+                    <!--<com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
@@ -87,7 +154,7 @@
                             android:paddingLeft="10dp"
                             android:paddingTop="20dp" />
 
-                    </com.google.android.material.textfield.TextInputLayout>
+                    </com.google.android.material.textfield.TextInputLayout>-->
 
                 </LinearLayout>
 
@@ -108,6 +175,7 @@
                     android:background="@drawable/edit_background">
 
                     <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/good_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:singleLine="true" />
@@ -121,13 +189,38 @@
                     android:layout_marginTop="15dp"
                     android:layout_marginRight="20dp"
                     android:hint="@string/ship_date"
+                    android:visibility="gone"
                     android:textColorHint="@android:color/black"></TextView>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginRight="20dp"
+                    android:hint="@string/ship_date"
+                    android:textColorHint="@android:color/black">
+
+                    <EditText
+                        android:id="@+id/ship_date_txt"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_background"
+                        android:gravity="top"
+                        android:paddingLeft="10dp"
+                        android:focusable="false"
+                        android:editable="false"
+                        android:textSize="14sp"
+                        android:paddingTop="20dp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
+                    android:visibility="gone"
                     android:background="@drawable/edit_background">
 
                     <androidx.appcompat.widget.AppCompatSpinner
@@ -147,7 +240,7 @@
                     android:textColorHint="@android:color/black">
 
                     <EditText
-                        android:id="@+id/shipment_description"
+                        android:id="@+id/delivery_number"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:background="@drawable/edit_background"
@@ -169,6 +262,7 @@
                     android:textColorHint="@android:color/black">
 
                     <EditText
+                        android:id="@+id/reference_txt"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:background="@drawable/edit_background"
@@ -197,6 +291,7 @@
                     android:background="@drawable/edit_background">
 
                     <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/device_id_spinner"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:padding="10dp"
@@ -223,6 +318,7 @@
                     android:background="@drawable/edit_background">
 
                     <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/department_type"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:padding="10dp"
@@ -240,6 +336,7 @@
                     android:layout_marginBottom="20dp">
 
                     <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/search_button"
                         android:layout_width="0dp"
                         android:layout_height="45dp"
                         android:layout_weight="1"
@@ -250,6 +347,7 @@
                         />
 
                     <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/cancel_button"
                         android:layout_width="0dp"
                         android:layout_height="45dp"
                         android:layout_alignParentBottom="true"
@@ -272,3 +370,5 @@
 
 
 </RelativeLayout>
+
+</layout>

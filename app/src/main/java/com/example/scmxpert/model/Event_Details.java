@@ -11,6 +11,9 @@ public class Event_Details {
     private String event_name;
     @SerializedName("event_Id")
     private String event_Id;
+    @SerializedName("photo_Evidence")
+    private String evidence;
+
 
 
     public String getBp_id() {
@@ -43,5 +46,13 @@ public class Event_Details {
 
     public void setEvent_Id(String event_Id) {
         this.event_Id = event_Id;
+    }
+
+    public String getEvidence() {
+        return evidence;
+    }
+
+    public void setEvidence(String evidence) {
+        this.evidence = evidence;
     }
 }

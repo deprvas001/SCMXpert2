@@ -3,6 +3,7 @@ package com.example.scmxpert.adapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +23,7 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.MyView
     public class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView shipment_id,from_place,deliver_place,
                 status,created_date,delivery_date;
+        public ProgressBar progressBar;
 
         public MyViewHolder(View view) {
             super(view);
@@ -31,6 +33,7 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.MyView
             status = (TextView)view.findViewById(R.id.status);
             created_date = (TextView)view.findViewById(R.id.create_date);
             delivery_date = (TextView)view.findViewById(R.id.deliver_date);
+            progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
 
         }
     }
@@ -54,18 +57,53 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.MyView
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
         try {
-            if(shippment.getCreated_by()!=null && shippment.getDelivery_date()!=null){
+            if(shippment.getCreated_date()!=null ){
                 holder.created_date.setText(sdf1.format(sdf.parse(shippment.getCreated_date())));
+            }else{
+                holder.created_date.setText("");
+            }
+
+            if(shippment.getDelivery_date()!=null){
                 holder.delivery_date.setText(sdf1.format(sdf.parse(shippment.getDelivery_date())));
+            }else{
+                holder.delivery_date.setText("");
             }
 
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        holder.shipment_id.setText(shippment.getShipment_id());
-        holder.from_place.setText("From-"+shippment.getRoute_form());
-        holder.deliver_place.setText("To-"+shippment.getRoute_to());
-        holder.status.setText("Status:"+shippment.getDelivery_status());
+        if(shippment.getShipment_id()!=null){
+            holder.shipment_id.setText(shippment.getShipment_id());
+        }else{
+            holder.shipment_id.setText("");
+        }
+        if(shippment.getRoute_form()!=null){
+            holder.from_place.setText("From-"+shippment.getRoute_form());
+        }else{
+            holder.from_place.setText("From-");
+        }
+        if(shippment.getRoute_to()!=null){
+            holder.deliver_place.setText("To-"+shippment.getRoute_to());
+        }else{
+            holder.deliver_place.setText("To-");
+        }
+
+        if(shippment.getEvent_status()!=null){
+            int val = Math.round(Float.parseFloat(shippment.getEvent_status()));
+            holder.progressBar.setProgress(val);
+        }else{
+            holder.progressBar.setProgress(0);
+        }
+
+        if(shippment.getDelivery_status()!=null){
+            if(shippment.getDelivery_status().equals("Delivered")){
+                holder.progressBar.setProgress(100);
+            }
+            holder.status.setText("Status:"+shippment.getDelivery_status());
+        }else{
+            holder.status.setText("Status:");
+        }
+
     }
 
     @Override

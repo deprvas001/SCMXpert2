@@ -1,6 +1,6 @@
 package com.example.scmxpert.views;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -17,12 +17,9 @@ import android.widget.TextView;
 
 import com.example.scmxpert.R;
 import com.example.scmxpert.base.BaseActivity;
-import com.example.scmxpert.fragment.DeliveredShipment;
-import com.example.scmxpert.fragment.GraphFragment;
 import com.example.scmxpert.fragment.LiveMapShipment;
-import com.example.scmxpert.fragment.LiveShipment;
-import com.example.scmxpert.fragment.MapFragment;
 import com.example.scmxpert.fragment.MapShipment;
+import com.example.scmxpert.views.createShipment.CreateShipment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
@@ -78,11 +75,13 @@ public class MapHome extends BaseActivity implements View.OnClickListener, TabLa
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.create_shipment:
-                startActivity(new Intent(this,CreateShipment.class));
+                startActivity(new Intent(this, CreateShipment.class));
                 break;
 
             case R.id.filter:
-                startActivity(new Intent(this,FilterScreen.class));
+                Intent intent = new Intent(this,FilterScreen.class);
+                intent.putExtra("tag","2");
+                startActivity(intent);
                 break;
 
             case R.id.fab:
@@ -166,6 +165,9 @@ public class MapHome extends BaseActivity implements View.OnClickListener, TabLa
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         finish();
     }
+
+
 }

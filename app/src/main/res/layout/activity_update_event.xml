@@ -210,6 +210,13 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/event_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/shipment_background">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
@@ -231,6 +238,8 @@
                             android:gravity="center_vertical"
                             android:paddingLeft="10dp"
                             android:singleLine="true"
+                            android:textColor="@color/shipment_detail"
+                            android:editable="false"
                             android:textSize="14sp" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -249,13 +258,42 @@
                             android:id="@+id/event_type_et"
                             android:layout_width="match_parent"
                             android:layout_height="50dp"
+                            android:editable="false"
+                            android:focusable="false"
                             android:background="@drawable/edit_background"
                             android:paddingLeft="10dp"
+                            android:textColor="@color/shipment_detail"
                             android:textSize="14sp" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginBottom="20dp"
+                    android:hint="@string/partner"
+                    android:textColorHint="@android:color/black">
+
+                    <EditText
+                        android:id="@+id/partner_name_edt"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_background"
+                        android:gravity="center_vertical"
+                        android:padding="10dp"
+                        android:editable="false"
+                        android:focusable="false"
+                        android:textColor="@color/shipment_detail"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
 
                 <TextView
                     android:id="@+id/partner_layout"
@@ -265,6 +303,7 @@
                     android:layout_marginTop="15dp"
                     android:layout_marginRight="20dp"
                     android:hint="@string/partner"
+                    android:visibility="gone"
                     android:textColorHint="@android:color/black"></TextView>
 
                 <RelativeLayout
@@ -272,7 +311,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-
+                    android:visibility="gone"
                     android:background="@drawable/edit_background">
 
                     <androidx.appcompat.widget.AppCompatSpinner
@@ -288,7 +327,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginRight="20dp"
                     android:hint="@string/event_reference"
                     android:textColorHint="@android:color/black">
@@ -296,10 +335,11 @@
                     <EditText
                         android:id="@+id/event_reference_et"
                         android:layout_width="match_parent"
-                        android:layout_height="80dp"
+                        android:layout_height="50dp"
                         android:background="@drawable/edit_background"
                         android:gravity="center_vertical"
                         android:padding="10dp"
+                        android:textColor="@color/shipment_detail"
                         android:singleLine="true"
                         android:textSize="14sp" />
 
@@ -338,7 +378,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginRight="20dp"
                     android:hint="@string/event_description"
                     android:textColorHint="@android:color/black">
@@ -349,6 +389,7 @@
                         android:layout_height="80dp"
                         android:background="@drawable/edit_background"
                         android:padding="10dp"
+                        android:textColor="@color/shipment_detail"
                         android:singleLine="true"
                         android:textSize="14sp" />
 
@@ -377,6 +418,7 @@
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/cancel_event"
                         android:layout_width="0dp"
                         android:layout_height="45dp"
                         android:layout_weight="1"

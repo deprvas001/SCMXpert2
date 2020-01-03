@@ -10,15 +10,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.scmxpert.R;
 import com.example.scmxpert.apiInterface.CompleteShipment;
+import com.example.scmxpert.helper.SessionManager;
 import com.example.scmxpert.model.MapModel;
 import com.example.scmxpert.model.Shippment;
 import com.example.scmxpert.model.WayPoint;
+import com.example.scmxpert.model.filter.FilterItemModel;
 import com.example.scmxpert.service.RetrofitClientInstance;
 import com.example.scmxpert.views.MapHome;
 import com.example.scmxpert.views.ShipmentHome;
@@ -37,6 +40,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -47,13 +51,18 @@ import io.reactivex.schedulers.Schedulers;
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
 public class MapShipment extends Fragment implements OnMapReadyCallback {
-    ArrayList<Object> waveList =new ArrayList<>();
+    ArrayList<Object> waveList = new ArrayList<>();
     private View rootView;
     GoogleMap gMap;
     private ArrayList<MapModel> target = new ArrayList<>();
     private ArrayList<Shippment> liveList = new ArrayList<>();
     private ArrayList<Shippment> deliverdList = new ArrayList<>();
     private CompositeDisposable disposable = new CompositeDisposable();
+    SessionManager session;
+    private String user_name = "";
+    private String partner_name = "";
+    private String customer_id="";
+    private String token = "";
 
     public MapShipment() {
         // Required empty public constructor
@@ -69,7 +78,18 @@ public class MapShipment extends Fragment implements OnMapReadyCallback {
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.frg);  //use SuppoprtMapFragment for using in fragment instead of activity  MapFragment = activity   SupportMapFragment = fragment
         mapFragment.getMapAsync(this);
+
         return rootView;
+    }
+
+    public void getUserDetail(){
+        session = new SessionManager(getActivity());
+        session.checkLogin();
+        HashMap<String, String> user = session.getUserDetails();
+        user_name = user.get(SessionManager.USER_NAME);
+        partner_name = user.get(SessionManager.PARTNER_NAME);
+        customer_id = user.get(SessionManager.CUSTOMER_ID);
+        token = user.get(SessionManager.TOKEN);
     }
 
 
@@ -78,7 +98,7 @@ public class MapShipment extends Fragment implements OnMapReadyCallback {
 
         CompleteShipment apiService = RetrofitClientInstance.getClient(getActivity()).create(CompleteShipment.class);
         disposable.add(
-                apiService.getAllShipmentDetails()
+                apiService.getAllShipmentDetails(customer_id)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(new DisposableSingleObserver<List<Shippment>>() {
@@ -89,41 +109,75 @@ public class MapShipment extends Fragment implements OnMapReadyCallback {
                                 liveList.clear();
                                 deliverdList.clear();
                                 for (Shippment shippment : notes) {
-                                    if(shippment.getDelivery_status()!=null){
+                                    if (shippment.getDelivery_status() != null) {
                                         if (!shippment.getDelivery_status().equals(getString(R.string.deliver))) {
-                                            liveList.add(shippment);
+
+                                            if (((MapHome) getActivity()).getIntent().getExtras() != null) {
+                                                Bundle bundle = ((MapHome) getActivity()).getIntent().getExtras();
+                                                FilterItemModel itemModel = bundle.getParcelable("filter_data");
+                                                if (shippment.getRoute_form().equals(itemModel.getFrom()) ||
+                                                        shippment.getRoute_to().equals(itemModel.getTo()) ||
+                                                        shippment.getGoods_desc().equals(itemModel.getGoods()) ||
+                                                        shippment.getType_reference().equals(itemModel.getReference()) ||
+                                                        shippment.getDevice_id().equals(itemModel.getDevice()) /*||
+                                                       shippment.getDepartments().equals(itemModel.getDep_type())*/) {
+                                                    liveList.add(shippment);
+                                                }
+                                            } else {
+                                                liveList.add(shippment);
+                                            }
+
+                                            ((MapHome) getActivity()).live_count.setText(String.valueOf(liveList.size()));
+
                                             ((MapHome) getActivity()).live_count.setText(String.valueOf(liveList.size()));
                                         } else {
-                                            deliverdList.add(shippment);
+                                            if (((MapHome) getActivity()).getIntent().getExtras() != null) {
+                                                Bundle bundle = ((MapHome) getActivity()).getIntent().getExtras();
+                                                FilterItemModel itemModel = bundle.getParcelable("filter_data");
+                                                if (shippment.getRoute_form().equals(itemModel.getFrom()) ||
+                                                        shippment.getRoute_to().equals(itemModel.getTo()) ||
+                                                        shippment.getGoods_desc().equals(itemModel.getGoods()) ||
+                                                        shippment.getType_reference().equals(itemModel.getReference()) ||
+                                                        shippment.getDevice_id().equals(itemModel.getDevice())
+                                                    /*shippment.getDepartments().equals(itemModel.getDep_type())*/) {
+                                                    deliverdList.add(shippment);
+                                                }
+                                            } else {
+                                                deliverdList.add(shippment);
+                                            }
                                             ((MapHome) getActivity()).deliver_count.setText(String.valueOf(deliverdList.size()));
                                         }
+                                    }else{
+                                        liveList.add(shippment);
                                     }
                                 }
 
                                 List<WayPoint> userList = new ArrayList<>();
-                                for(int k=0;k<deliverdList.size();k++){
+                                for (int k = 0; k < deliverdList.size(); k++) {
                                     String json = String.valueOf(deliverdList.get(k).getWaypoint());
-                                   if(json !=null){
-                                       try {
-                                           JSONArray array = new JSONArray(json);
-                                           int count = array.length();
-                                           for (int i = 0; i < count; i++) {
-                                               JSONArray innerArray = array.getJSONArray(i);
-                                               WayPoint point = new WayPoint();
-                                               point.setLat(innerArray.get(0).toString());
-                                               point.setId(deliverdList.get(k).getShipment_id());
-                                               point.setLongt(innerArray.get(1).toString());
-                                               userList.add(point);
-                                           }
+                                    try {
+                                        JSONArray array = new JSONArray(json);
+                                        int count = array.length();
+                                        if (count > 0) {
+                                            JSONArray innerArray = array.getJSONArray(count - 1);
+                                            WayPoint point = new WayPoint();
+                                            point.setLat(innerArray.get(0).toString());
+                                            point.setLongt(innerArray.get(1).toString());
+                                            point.setId(deliverdList.get(k).getShipment_id());
+                                            userList.add(point);
+                                        }
 
-                                       }catch (JSONException e){
-                                           e.printStackTrace();
-                                       }
-                                   }
 
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
 
-                                addMarker(userList);
+                                if (userList.size() > 0) {
+                                    addMarker(userList);
+                                } else {
+                                    Toast.makeText(getActivity(), "No Result Found.", Toast.LENGTH_SHORT).show();
+                                }
                             }
 
                             @Override
@@ -136,29 +190,17 @@ public class MapShipment extends Fragment implements OnMapReadyCallback {
         );
     }
 
-    private BitmapDescriptor bitmapDescriptorFromVector(Context context, int vectorResId) {
-        Drawable vectorDrawable = ContextCompat.getDrawable(context, vectorResId);
-        vectorDrawable.setBounds(0, 0, vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight());
-        Bitmap bitmap = Bitmap.createBitmap(vectorDrawable.getIntrinsicWidth(), vectorDrawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        vectorDrawable.draw(canvas);
-        return BitmapDescriptorFactory.fromBitmap(bitmap);
-    }
-
-    private void addMarker(){
-
-    }
-
     @Override
     public void onMapReady(GoogleMap googleMap) {
         waveList.clear();
         gMap = googleMap;
+        getUserDetail();
         getAllShipment();
 
 
     }
 
-    private void addMarker(List<WayPoint> wayPoints){
+    private void addMarker(List<WayPoint> wayPoints) {
         Double init_lat = Double.parseDouble(wayPoints.get(0).getLat());
         Double init_longt = Double.parseDouble(wayPoints.get(0).getLongt());
         CameraPosition googlePlex = CameraPosition.builder()
@@ -168,21 +210,19 @@ public class MapShipment extends Fragment implements OnMapReadyCallback {
                 .tilt(45)
                 .build();
 
-        for(int i=0;i<wayPoints.size();i++){
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
 
-            gMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
+        for (int i = 0; i < wayPoints.size(); i++) {
 
-            Double lat = Double.parseDouble(wayPoints.get(i).getLat());
-            Double longt = Double.parseDouble(wayPoints.get(i).getLongt());
-       /* gMap.addMarker(new MarkerOptions()
-                .position(new LatLng(37.4219999, -122.0862462))
-                .title("Spider Man")
-                .icon(bitmapDescriptorFromVector(getActivity(), R.drawable.map_icon)));*/
+            double lat = Double.parseDouble(wayPoints.get(i).getLat());
+            double longt = Double.parseDouble(wayPoints.get(i).getLongt());
+
 
             gMap.addMarker(new MarkerOptions()
                     .position(new LatLng(lat, longt))
                     .title(wayPoints.get(i).getId()));
-                    //.snippet("His Talent : Plenty of money"));
+            //  .icon(bitmapDescriptorFromVector(getActivity(), R.drawable.map_icon)));
+            //.snippet("His Talent : Plenty of money"));
 
         }
 

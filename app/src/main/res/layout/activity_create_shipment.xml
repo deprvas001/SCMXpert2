@@ -38,11 +38,10 @@
                 android:textSize="18sp" />
         </androidx.appcompat.widget.Toolbar>
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-
             android:background="@android:color/white">
 
             <LinearLayout
@@ -156,7 +155,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-
                     android:background="@drawable/edit_background">
 
                     <androidx.appcompat.widget.AppCompatSpinner
@@ -165,8 +163,16 @@
                         android:layout_height="50dp"
                         android:padding="10dp"
                         android:singleLine="true" />
-
                 </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:scrollbars="vertical" />
 
                 <TextView
                     android:id="@+id/route_view"
@@ -177,6 +183,7 @@
                     android:layout_marginRight="20dp"
                     android:gravity="right"
                     android:text="@string/add_route"
+                    android:visibility="gone"
                     android:textColor="@color/view_background" />
 
                 <TextView
@@ -241,6 +248,7 @@
                     android:layout_marginRight="20dp"
                     android:gravity="right"
                     android:text="@string/scan_device"
+                    android:visibility="gone"
                     android:textColor="@color/view_background" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -286,7 +294,7 @@
 
 
 
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
 
     </LinearLayout>

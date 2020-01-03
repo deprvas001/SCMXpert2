@@ -1,85 +1,65 @@
-package com.example.scmxpert.views;
+package com.example.scmxpert.views.createShipment;
 
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import android.app.AlertDialog;
-import android.content.Context;
+import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Base64;
-import android.util.Log;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
 import android.widget.Toast;
-
-import com.android.volley.AuthFailureError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.scmxpert.R;
-import com.example.scmxpert.ViewModel.ShipmentStatus;
-import com.example.scmxpert.ViewModel.ShipmentStatusFactory;
+import com.example.scmxpert.adapter.EventsAdapter;
 import com.example.scmxpert.apiInterface.CompleteShipment;
 import com.example.scmxpert.base.BaseActivity;
-import com.example.scmxpert.constants.ApiConstants;
 import com.example.scmxpert.databinding.ActivityCreateShipmentBinding;
 import com.example.scmxpert.helper.CommonMethod;
 import com.example.scmxpert.helper.SessionManager;
-import com.example.scmxpert.model.CreateNewShipmentResponse;
 import com.example.scmxpert.model.CreateShipmentDrop;
-import com.example.scmxpert.model.CreateShipmentResponse;
 import com.example.scmxpert.model.Event_Details;
 import com.example.scmxpert.model.GoodsItem;
 import com.example.scmxpert.model.RouteSpinnerData;
-import com.example.scmxpert.model.ShipmentDetail;
 import com.example.scmxpert.model.ShipmentGoods;
-import com.example.scmxpert.model.Shippment;
+import com.example.scmxpert.model.createShipment.CreateEvent;
+import com.example.scmxpert.model.createShipment.CreateShipmentRequest;
 import com.example.scmxpert.service.RetrofitClientInstance;
-import com.example.scmxpert.viewClick.DatePick;
-import com.google.gson.JsonObject;
+import com.example.scmxpert.viewClick.RecyclerItemTouchHelper;
+import com.example.scmxpert.views.AddRoute;
+import com.example.scmxpert.views.ShipmentHome;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.TimeZone;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-
-import static com.example.scmxpert.constants.ApiConstants.CREATED_BY;
-import static com.example.scmxpert.constants.ApiConstants.CREATE_SHIPMENT;
-import static com.example.scmxpert.constants.ApiConstants.CUSTOMER_NAME;
 import static com.example.scmxpert.constants.ApiConstants.QRCODE_KEY;
-import static com.example.scmxpert.constants.ApiConstants.SHARED_PREF_NAME;
-import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
-public class CreateShipment extends BaseActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class CreateShipment extends BaseActivity implements View.OnClickListener, AdapterView.OnItemSelectedListener, RecyclerItemTouchHelper.RecyclerItemTouchHelperListener {
     ActivityCreateShipmentBinding createShipmentBinding;
     ArrayAdapter<String> device_Adapter, reference_Adapter;
     ArrayAdapter<RouteSpinnerData> route_adapter;
     ArrayAdapter<GoodsItem> good_adapter;
+    private DatePickerDialog mDatePickerDialog;
+    private EventsAdapter mAdapter;
     public static final int QRCODE_REQUEST_CODE = 99;
     private List<String> reference_type_list = new ArrayList<>();
     private List<String> device_id_list = new ArrayList<>();
@@ -88,8 +68,16 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
     private List<RouteSpinnerData> route_data = new ArrayList<>();
     private List<GoodsItem> goodsItems = new ArrayList<>();
     private CompositeDisposable disposable = new CompositeDisposable();
-    private String type_reference_data = "", device_detail_data = "", route_id = "", goods_data = "",
-            goods_id_data = "", user_name = "", partner_name = "", timezone, token = "";
+    private String type_reference_data = "";
+    private String device_detail_data = "";
+    private String route_id = "";
+    private String goods_data = "";
+    private String goods_id_data = "";
+    private String user_name = "";
+    private String partner_name = "";
+    private String customer_id="";
+    private String token = "";
+    CreateShipmentViewModel viewModel;
     private RouteSpinnerData routeSpinnerData;
     SessionManager session;
     List<Event_Details> event_list = new ArrayList<>();
@@ -101,9 +89,9 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
         createShipmentBinding = DataBindingUtil.setContentView(this, R.layout.activity_create_shipment);
         setSupportActionBar(createShipmentBinding.customToolbar);
         createShipmentBinding.customToolbar.setNavigationIcon(getResources().getDrawable(R.drawable.back_arrow));
-
         setClickListener();
         getShipmentDetail();
+
     }
 
     private void setClickListener() {
@@ -115,31 +103,45 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
         createShipmentBinding.routeSpinner.setOnItemSelectedListener(this);
         createShipmentBinding.deviceSpinner.setOnItemSelectedListener(this);
         createShipmentBinding.goodsSpinner.setOnItemSelectedListener(this);
+
+        setDateTimeField();
+        createShipmentBinding.expectDate.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                mDatePickerDialog.show();
+                return false;
+            }
+        });
+
+        // adding item touch helper
+        // only ItemTouchHelper.LEFT added to detect Right to Left swipe
+        // if you want both Right -> Left and Left -> Right
+        // add pass ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT as param
+        ItemTouchHelper.SimpleCallback itemTouchHelperCallback = new RecyclerItemTouchHelper(0, ItemTouchHelper.LEFT, this);
+        new ItemTouchHelper(itemTouchHelperCallback).attachToRecyclerView(createShipmentBinding.recyclerView);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.shipment_number:
-                 i = new Intent(CreateShipment.this, QrCodeScreen.class);
-                startActivityForResult(i, QRCODE_REQUEST_CODE);
+               /*  i = new Intent(CreateShipment.this, QrCodeScreen.class);
+                startActivityForResult(i, QRCODE_REQUEST_CODE);*/
                 break;
 
-            case R.id.expect_date:
-                DatePick fromDate = new DatePick(this, createShipmentBinding.expectDate);
+           /* case R.id.expect_date:
 
-                break;
+               new DatePick(this, createShipmentBinding.expectDate);
+                break;*/
 
             case R.id.route_view:
                 i = new Intent(CreateShipment.this, AddRoute.class);
@@ -169,9 +171,9 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
                         showAlertDialog(CreateShipment.this, getString(R.string.type_reference_empty));
                     } else if (route_id.isEmpty()) {
                         showAlertDialog(CreateShipment.this, getString(R.string.route_empty));
-                    } else if (device_detail_data.isEmpty()) {
+                    } /*else if (device_detail_data.isEmpty()) {
                         showAlertDialog(CreateShipment.this, getString(R.string.device_empty));
-                    } else if (expect_date.isEmpty()) {
+                    }*/ else if (expect_date.isEmpty()) {
                         showAlertDialog(CreateShipment.this, getString(R.string.expect_date_empty));
                     } else if (goods_data.isEmpty()) {
                         showAlertDialog(CreateShipment.this, getString(R.string.goods_empty));
@@ -181,9 +183,7 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
                 } else {
                     CommonMethod.showAlert(getString(R.string.no_connection), CreateShipment.this);
                 }
-
                 break;
-
         }
     }
 
@@ -204,6 +204,7 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
         HashMap<String, String> user = session.getUserDetails();
         user_name = user.get(SessionManager.USER_NAME);
         partner_name = user.get(SessionManager.PARTNER_NAME);
+        customer_id = user.get(SessionManager.CUSTOMER_ID);
         token = user.get(SessionManager.TOKEN);
 
         if (user_name != null) {
@@ -213,11 +214,9 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
         getDDData();
     }
 
-
     @Override
     protected void onStop() {
         super.onStop();
-
     }
 
     private void getDDData() {
@@ -225,7 +224,7 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
 
         CompleteShipment apiService = RetrofitClientInstance.getClient(this).create(CompleteShipment.class);
         disposable.add(
-                apiService.getDDData("SCM0001-A00001")
+                apiService.getDDData(customer_id)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribeWith(new DisposableSingleObserver<CreateShipmentDrop>() {
@@ -240,7 +239,7 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
                                 hideProgressDialog();
                                 Toast.makeText(CreateShipment.this, getString(R.string.try_later), Toast.LENGTH_SHORT).show();
                                 finish();
-                                Log.e(TAG, "onError: " + e.getMessage());
+                              //  Log.e(TAG, "onError: " + e.getMessage());
                             }
                         })
         );
@@ -295,24 +294,24 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
             // route_list.add(route.getFrom()+","+route.getTo()+","+route.getMode_of_transport()+","+route.getInco_term());
         }
 
-        device_Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, device_id_list);
+        device_Adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, device_id_list);
         device_Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // attaching data adapter to spinner
         createShipmentBinding.deviceSpinner.setAdapter(device_Adapter);
 
-        reference_Adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, reference_type_list);
+        reference_Adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, reference_type_list);
         reference_Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         createShipmentBinding.typeReference.setAdapter(reference_Adapter);
 
-        good_adapter = new ArrayAdapter<GoodsItem>(this, android.R.layout.simple_spinner_item, goodsItems);
+        good_adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, goodsItems);
         good_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         // attaching data adapter to spinner
         createShipmentBinding.goodsSpinner.setAdapter(good_adapter);
 
-        route_adapter = new ArrayAdapter<RouteSpinnerData>(this, android.R.layout.simple_spinner_item, route_data);
+        route_adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, route_data);
         route_adapter.setDropDownViewResource(R.layout.spinner_item);
 
         // attaching data adapter to spinner
@@ -322,112 +321,83 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
     }
 
     private void createShipment() {
+        showProgressDialog(getString(R.string.loading));
 
-        JSONObject params = new JSONObject();
-        try {
-            JSONArray event_array = new JSONArray();
+        List<CreateEvent> createEventList = new ArrayList<>();
+        List<String> comments = new ArrayList<>();
+
+
             for (int i = 0; i < event_list.size(); i++) {
+                CreateEvent event = new CreateEvent();
                 Event_Details details = event_list.get(i);
-                JSONObject object = new JSONObject();
-                object.put("event Id", details.getEvent_Id());
-                object.put("partner", details.getBp_id());
-                object.put("event", details.getEvent_name());
-                object.put("date", "");
-                event_array.put(object);
+                event.setEventId(details.getEvent_Id());
+                event.setBp_Id(details.getBp_id());
+                event.setPartner(details.getBp_name());
+                event.setEvent(details.getEvent_name());
+                event.setEvidence(details.getEvidence());
+              //  event.setDate("");
+                createEventList.add(event);
             }
 
-            JSONArray comment = new JSONArray();
-            comment.put(createShipmentBinding.shipmentDescription.getText().toString());
-            params.put("internalShipmentId", createShipmentBinding.shipmentDetails.internalShipmentId.getText().toString());
-            params.put("shipment_Num", createShipmentBinding.shipmentNumber.getText().toString());
-            params.put("customerId", user_name);
-            /* params.put("shipment_Number","T000000041");*/
-            params.put("typeOfReference", type_reference_data);
-            params.put("comments", comment);
-            params.put("routeId", routeSpinnerData.getRoute_id());
-            params.put("routeFrom", routeSpinnerData.getRoute_from());
-            params.put("routeTo", routeSpinnerData.getRoute_to());
-            params.put("goodsId", goods_id_data);
-            params.put("goodsType", goods_data);
-            params.put("parnterFrom", partner_name);  //fixed
-            params.put("deviceId", device_detail_data);
-            params.put("allEvents", event_array);
-            params.put("incoTerms", routeSpinnerData.getInco_term());
-            params.put("mode", routeSpinnerData.getMode_of_transport());
-            params.put("temp", "");
-            params.put("rH", "");
-            params.put("created_Date", timeCreate());
-            params.put("estimatedDeliveryDate", createShipmentBinding.expectDate.getText().toString());
-            Log.i("SCM", params.toString());
-        } catch (JSONException e) {
+            for(int i=0;i<createEventList.size();i++){
+                if(i==0){
+                    createEventList.get(i).setEvent_Status("Initialized");
+                }else{
+                    createEventList.get(i).setEvent_Status("Queued");
+                }
 
-        }
-        RequestQueue mQueue = Volley.newRequestQueue(getApplicationContext());
-        JsonObjectRequest jobReq = new JsonObjectRequest(Request.Method.POST, CREATE_SHIPMENT, params,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject jsonObject) {
-
-                        if (jsonObject.has(getString(R.string.status))) {
-                            try {
-                                String message = jsonObject.getString(getString(R.string.message));
-                                boolean status = jsonObject.getBoolean(getString(R.string.status));
-                                if (status == true) {
-                                    successAlert(message);
-                                } else if (status == false) {
-                                    showAlertDialog(CreateShipment.this, message);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        Toast.makeText(CreateShipment.this, String.valueOf(jsonObject), Toast.LENGTH_SHORT).show();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        String json = "";
-                        if (volleyError.networkResponse != null && volleyError.networkResponse.data != null) {
-                            try {
-                                json = new String(volleyError.networkResponse.data,
-                                        HttpHeaderParser.parseCharset(volleyError.networkResponse.headers));
-                                try {
-                                    JSONObject object = new JSONObject(json);
-                                    String error = object.getString("error");
-                                    if (object.has("status")) {
-                                        showAlertDialog(CreateShipment.this, error);
-                                    } else if (error.equals("invalid_token")) {
-                                        Toast.makeText(CreateShipment.this, getString(R.string.session_timeout), Toast.LENGTH_SHORT).show();
-                                        //  showAlertDialog(CreateShipment.this,getString(R.string.session_timeout));
-                                        finish();
-                                        session.logoutUser();
-                                    } else {
-                                        showAlertDialog(CreateShipment.this, getString(R.string.try_later));
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    showAlertDialog(CreateShipment.this, getString(R.string.create_shipment));
-                                }
-
-                            } catch (UnsupportedEncodingException e) {
-
-                            }
-
-                        }
-                        VolleyLog.e("Error: ", volleyError.getMessage());
-                    }
-                }) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> params = new HashMap<String, String>();
-                params.put(ApiConstants.CONTENT_TYPE, "application/json");
-                String bearer = "Bearer ".concat(token);
-                params.put("Authorization", bearer);
-                return params;
             }
-        };
-        mQueue.add(jobReq);
+
+            comments.add(createShipmentBinding.shipmentDescription.getText().toString());
+
+            CreateShipmentRequest shipmentRequest = new CreateShipmentRequest();
+            shipmentRequest.setInternalShipmentId(createShipmentBinding.shipmentDetails.internalShipmentId.getText().toString());
+            shipmentRequest.setShipmentNumber(createShipmentBinding.shipmentNumber.getText().toString());
+            shipmentRequest.setShipmentId(createShipmentBinding.shipmentDetails.internalShipmentId.getText().toString());
+            shipmentRequest.setCustomerId(customer_id);
+            shipmentRequest.setTypeOfReference(type_reference_data);
+            shipmentRequest.setComment(comments);
+            shipmentRequest.setRouteId(routeSpinnerData.getRoute_id());
+            shipmentRequest.setRouteFrom(routeSpinnerData.getRoute_from());
+            shipmentRequest.setRouteTo(routeSpinnerData.getRoute_to());
+            shipmentRequest.setGoodsId(goods_id_data);
+            shipmentRequest.setGoodsType(goods_data);
+            shipmentRequest.setDeviceId(device_detail_data);
+          //  shipmentRequest.setDeviceId("12345");
+            shipmentRequest.setAllEvents(createEventList);
+            shipmentRequest.setIncoTerms(routeSpinnerData.getInco_term());
+            shipmentRequest.setMode(routeSpinnerData.getMode_of_transport());
+            shipmentRequest.setTemp("");
+            shipmentRequest.setrH("");
+            shipmentRequest.setDatee(timeCreate());
+            shipmentRequest.setEvent("Preparation");
+            shipmentRequest.setEstimatedDeliveryDate(createShipmentBinding.expectDate.getText().toString());
+
+        viewModel = ViewModelProviders.of(this).get(CreateShipmentViewModel.class);
+
+       /* viewModel.createShipment(token,shipmentRequest).observe(this, apiResponse -> {
+
+            if (apiResponse == null) {
+                hideProgressDialog();
+                // handle error here
+                showAlertDialog(CreateShipment.this, getString(R.string.try_later));
+                return;
+            }if (apiResponse.getError() == null) {
+                 hideProgressDialog();
+                // call is successful
+                //  Log.i(TAG, "Data response is " + apiResponse.getPosts());
+                Toast.makeText(this,"Shipment Create Successfully.", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(this, ShipmentHome.class));
+                finish();
+            } else {
+                // call failed.
+                hideProgressDialog();
+                Throwable e = apiResponse.getError();
+                Toast.makeText(CreateShipment.this, "Error is " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                // Log.e(TAG, "Error is " + e.getLocalizedMessage());
+            }
+
+        });*/
     }
 
     @Override
@@ -440,6 +410,12 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
                     routeSpinnerData = data;
                     route_id = data.getRoute_id();
                     event_list = data.getEvent_details();
+                    setRecyclerView();
+                    mAdapter.notifyDataSetChanged();
+                }else{
+                    event_list.clear();
+                   // mAdapter.notifyDataSetChanged();
+                    setRecyclerView();
                 }
                 break;
 
@@ -452,6 +428,8 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
             case R.id.device_spinner:
                 if (position > 0) {
                     device_detail_data = createShipmentBinding.deviceSpinner.getSelectedItem().toString();
+                }else{
+                    device_detail_data = "344333";
                 }
                 break;
 
@@ -460,7 +438,6 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
                     GoodsItem item = (GoodsItem) createShipmentBinding.goodsSpinner.getSelectedItem();
                     goods_data = item.getGoods();
                     goods_id_data = item.getGoods_id();
-
                 }
                 break;
         }
@@ -480,21 +457,87 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
     private String timeCreate() {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss Z", Locale.ENGLISH);
-        timezone = sdf.format(c.getTime());
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String timezone = sdf.format(c.getTime());
         return timezone;
     }
 
-    public void successAlert(String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(CreateShipment.this);
-        builder.setTitle(getString(R.string.app_name))
-                .setMessage(message)
-                .setCancelable(false)
-                .setPositiveButton("Ok", (dialog, which) -> {
-                    builder.create().dismiss();
-                    startActivity(new Intent(CreateShipment.this, CreateShipment.class));
-                    finish();
-                });
-        builder.create().show();
+
+   private void setRecyclerView(){
+       mAdapter = new EventsAdapter(this, event_list);
+       RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+       createShipmentBinding.recyclerView.setLayoutManager(mLayoutManager);
+       createShipmentBinding.recyclerView.setItemAnimator(new DefaultItemAnimator());
+     //  createShipmentBinding.recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
+       createShipmentBinding.recyclerView.setAdapter(mAdapter);
+   }
+
+    /**
+     * callback when recycler view is swiped
+     * item will be removed on swiped
+     * undo option will be provided in snackbar to restore the item
+     */
+    @Override
+    public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction, int position) {
+        if (viewHolder instanceof EventsAdapter.MyViewHolder) {
+            // get the removed item name to display it in snack bar
+            String name = event_list.get(viewHolder.getAdapterPosition()).getEvent_name();
+
+            // backup of removed item for undo purpose
+            final Event_Details deletedItem = event_list.get(viewHolder.getAdapterPosition());
+            final int deletedIndex = viewHolder.getAdapterPosition();
+
+            // remove the item from recycler view
+            mAdapter.removeItem(viewHolder.getAdapterPosition());
+
+            // showing snack bar with Undo option
+          /*  Snackbar snackbar = Snackbar
+                    .make(coordinatorLayout, name + " removed from cart!", Snackbar.LENGTH_LONG);
+            snackbar.setAction("UNDO", new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    // undo is selected, restore the deleted item
+                    mAdapter.restoreItem(deletedItem, deletedIndex);
+                }
+            });
+            snackbar.setActionTextColor(Color.YELLOW);
+            snackbar.show();*/
+        }
     }
 
+    private void setDateTimeField() {
+
+        Calendar newCalendar = Calendar.getInstance();
+        mDatePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss Z", Locale.ENGLISH);
+                sd.setTimeZone(TimeZone.getTimeZone("UTC"));
+                final Date startDate = newDate.getTime();
+                String fdate = sd.format(startDate);
+                createShipmentBinding.expectDate.setText(fdate);
+            }
+        }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
+        mDatePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+      /*  mDatePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());*/
+
+    }
+
+    public String convertDate(String input){
+        SimpleDateFormat inputFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date d = null;
+        try {
+            //convert string to date
+            d = inputFormat.parse(input);
+        } catch (ParseException e) {
+            System.out.println("Date Format Not Supported");
+            e.printStackTrace();
+        }
+
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return  outputFormat.format(d).toString();
+    }
 }

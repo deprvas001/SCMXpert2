@@ -13,6 +13,10 @@ import com.example.scmxpert.model.UpdateEventDetails;
 import com.example.scmxpert.model.ApiResponse;
 import com.example.scmxpert.model.UpdateRoute;
 import com.example.scmxpert.model.UpdateSendRequest;
+import com.example.scmxpert.model.UserDetails;
+import com.example.scmxpert.model.filter.FilterGetResponse;
+import com.example.scmxpert.model.forgotModel.ForgotRequestModel;
+import com.example.scmxpert.model.forgotModel.ForgotResponse;
 
 import java.util.List;
 
@@ -22,6 +26,7 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -34,8 +39,11 @@ public interface CompleteShipment {
     @GET("getShipments/{id}/{create}")
     Single<List<Shippment>> getShipment1(@Path("id") String id,@Path("create") String create);
 
-    @GET("getShipmentsListAll")
-    Single<List<Shippment>> getAllShipmentDetails();
+    @GET("getShipmentsList/{Customer_Id}")
+    Single<List<Shippment>> getAllShipmentDetails(@Path("Customer_Id") String Customer_Id);
+
+    @GET("userTotaldetails/{id}")
+    Single<UserDetails> getUserDetails(@Path("id") String id);
 
 
     @GET("getShipmentTransactionDeviceData/{id}")
@@ -49,6 +57,9 @@ public interface CompleteShipment {
 
     @GET("getDDData/{id}")
     Single<CreateShipmentDrop> getDDData(@Path("id") String id);
+
+    @GET("getFiltersData/{id}")
+    Single<FilterGetResponse> getFilterData(@Path("id") String id);
 
     @GET("getDeviceDataTemp/{id}")
     Single<List<DeviceTempData>> getDeviceDataTemp(@Path("id") String id);
@@ -64,6 +75,12 @@ public interface CompleteShipment {
 
     @POST("createNewShipment")
     Single<CreateShipmentDrop> createShipment(@Path("id") String id);
+
+    @POST("Forgot")
+    Single<ForgotResponse> resetPassword(
+            @Header("Accept") String accept,
+            @Header ("Content-Type") String content_type,
+            @Body ForgotRequestModel requestModel);
 
 
     @FormUrlEncoded
