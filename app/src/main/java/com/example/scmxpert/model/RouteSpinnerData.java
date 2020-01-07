@@ -65,6 +65,6 @@ public class RouteSpinnerData {
     @NonNull
     @Override
     public String toString() {
-        return route_from+","+route_to+","+mode_of_transport+","+inco_term;
+        return route_from+" "+route_to+" "+mode_of_transport+" "+inco_term;
     }
 }

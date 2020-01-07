@@ -24,6 +24,9 @@ import com.example.scmxpert.base.BaseActivity;
 import com.example.scmxpert.fragment.DeliveredShipment;
 import com.example.scmxpert.fragment.LiveShipment;
 import com.example.scmxpert.helper.SessionManager;
+import com.example.scmxpert.networking.RetrofitService;
+import com.example.scmxpert.networking.ShipmentApi;
+import com.example.scmxpert.service.RetrofitClientInstance;
 import com.example.scmxpert.views.createShipment.CreateShipment;
 import com.google.android.material.tabs.TabLayout;
 
@@ -31,11 +34,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import retrofit2.Retrofit;
+
 public class ShipmentHome extends BaseActivity implements View.OnClickListener, TabLayout.OnTabSelectedListener {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     ImageView create_shipment,filter,logout;
     Toolbar toolbar;
+
     public TextView live_count,deliver_count;
     SessionManager session;
        Intent intent;
@@ -201,6 +207,7 @@ public class ShipmentHome extends BaseActivity implements View.OnClickListener, 
                 .setPositiveButton("Yes", (dialog, which) -> {
                     builder.create().dismiss();
                     session.logoutUser();
+                    RetrofitClientInstance.setRetrofit();
 
                 })
                 .setNegativeButton("No",(dialog, which) -> {

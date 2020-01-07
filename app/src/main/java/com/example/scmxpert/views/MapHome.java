@@ -1,6 +1,7 @@
 package com.example.scmxpert.views;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -10,6 +11,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,10 +34,13 @@ public class MapHome extends BaseActivity implements View.OnClickListener, TabLa
     ImageView create_shipment,filter;
     private FloatingActionButton fab;
     public TextView live_count,deliver_count;
+    Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_home);
+       /* toolbar = (Toolbar)findViewById(R.id.custom_toolbar);
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.back_arrow));*/
 
         create_shipment = (ImageView)findViewById(R.id.create_shipment);
         fab =  findViewById(R.id.fab);
@@ -169,5 +174,13 @@ public class MapHome extends BaseActivity implements View.OnClickListener, TabLa
         finish();
     }
 
+    /*@Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }*/
 
 }

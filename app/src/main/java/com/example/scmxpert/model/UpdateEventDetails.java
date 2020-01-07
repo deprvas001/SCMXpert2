@@ -51,7 +51,16 @@ public class UpdateEventDetails {
     private String imei_number;
     @SerializedName("parent_Device_Id")
     private String parent_device_id;
+    @SerializedName("partner")
+    private String partner;
 
+    public String getPartner() {
+        return partner;
+    }
+
+    public void setPartner(String partner) {
+        this.partner = partner;
+    }
 
     public String getTemp() {
         return temp;

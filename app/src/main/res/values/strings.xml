@@ -124,4 +124,5 @@
     <string name="update_event_status"> No Event to update please click on complete button to complete event</string>
     <string name="complete_status_event">Right now you can only update event</string>
     <string name="internal_server_error">Internal Server Error</string>
+    <string name="shipment_created_successful">Shipment Create Successfully.</string>
 </resources>

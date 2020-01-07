@@ -6,17 +6,27 @@ public class UpdateEventModel {
     private String event;
     private String date;
     private String event_status;
-
+    private String partner_id;
     public UpdateEventModel(){
 
     }
 
-    public UpdateEventModel(String event_id,String partner,String event,String date,String event_status){
+    public String getPartner_id() {
+        return partner_id;
+    }
+
+    public void setPartner_id(String partner_id) {
+        this.partner_id = partner_id;
+    }
+
+    public UpdateEventModel(String event_id, String partner, String event, String date, String event_status, String partner_id){
         this.event_id = event_id;
         this.partner = partner;
         this.event = event;
         this.date = date;
         this.event_status = event_status;
+        this.partner_id = partner_id;
+
     }
 
     public String getEvent_id() {

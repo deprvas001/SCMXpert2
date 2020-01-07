@@ -57,7 +57,7 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
     private List<String> receiving_location = new ArrayList<>();
     ArrayAdapter<String>  reference_Adapter,partner_Adapter,receiving_location_Adapter,return_location_Adapter;
     SessionManager session;
-    String user_name="",partner_name="",return_location_val="",token="",partner_id="",reference_id="",receive_location="";
+    String user_name="",partner_name="",return_location_val="",token="",partner_id="",reference_id="",receive_location="",partner_id_value="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,8 +121,9 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
                                     String partner = updateEvent.get(i).getPartner_from();
                                     String event = updateEvent.get(i).getEvent_Name();
                                     String status = updateEvent.get(i).getEvent_status();
-                                    String date = updateEvent.get(i).getEvent_exec_date();
-                                    UpdateEventModel model = new UpdateEventModel(event_id,partner,event,date,status);
+                                    String date = updateEvent.get(i).getExpected_date_atBp();
+                                    String partner_id = updateEvent.get(i).getPartner();
+                                    UpdateEventModel model = new UpdateEventModel(event_id,partner,event,date,status,partner_id);
                                     event_list.add(model);
                                 }
 
@@ -153,7 +154,7 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
                 hideProgressDialog();
                 reference_type_list = response.getReference_type();
                 reference_type_list.add(0,getString(R.string.select_reference));
-                reference_Adapter = new ArrayAdapter<>(CompleteShipmentFill.this, android.R.layout.simple_spinner_item, reference_type_list);
+                reference_Adapter = new ArrayAdapter<>(CompleteShipmentFill.this, R.layout.spinner_item_layout, reference_type_list);
                 reference_Adapter.setDropDownViewResource(R.layout.spinner_item);
 
                 // attaching data adapter to spinner
@@ -162,7 +163,7 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
 
                 partner_list = response.getPartner_id();
                 partner_list.add(0,getString(R.string.select_partner));
-                partner_Adapter = new ArrayAdapter<>(CompleteShipmentFill.this, android.R.layout.simple_spinner_item, partner_list);
+                partner_Adapter = new ArrayAdapter<>(CompleteShipmentFill.this, R.layout.spinner_item_layout, partner_list);
                 partner_Adapter.setDropDownViewResource(R.layout.spinner_item);
 
                 // attaching data adapter to spinner
@@ -181,14 +182,14 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
                 }
 
                 receiving_location.add(0,getString(R.string.select_location));
-                receiving_location_Adapter = new ArrayAdapter<>(CompleteShipmentFill.this, android.R.layout.simple_spinner_item, receiving_location);
+                receiving_location_Adapter = new ArrayAdapter<>(CompleteShipmentFill.this, R.layout.spinner_item_layout, receiving_location);
                 receiving_location_Adapter.setDropDownViewResource(R.layout.spinner_item);
                 // attaching data adapter to spinner
                 completeShipmentBinding.receivingLocation.setAdapter(receiving_location_Adapter);
 
 
                 return_location.add(0,getString(R.string.return_location));
-                return_location_Adapter = new ArrayAdapter<>(CompleteShipmentFill.this, android.R.layout.simple_spinner_item, return_location);
+                return_location_Adapter = new ArrayAdapter<>(CompleteShipmentFill.this, R.layout.spinner_item_layout, return_location);
                 return_location_Adapter.setDropDownViewResource(R.layout.spinner_item);
                 // attaching data adapter to spinner
                 completeShipmentBinding.deviceReturnLocation.setAdapter(return_location_Adapter);
@@ -200,12 +201,12 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
         });
     }
 
-
     private void completeShipment(){
         showProgressDialog(getString(R.string.loading));
         CompleteShipmentModel completeShipment = new CompleteShipmentModel();
         completeShipment.setShipment_number(shippment.getShipment_id());
-        completeShipment.setPartner(completeShipmentBinding.partnerNameEdt.getText().toString());
+        completeShipment.setPartner(partner_id_value);
+    //    completeShipment.setPartner(completeShipmentBinding.partnerNameEdt.getText().toString());
         completeShipment.setEvent(completeShipmentBinding.eventType.getText().toString());
         completeShipment.setDateandTime(getDatetime());
         completeShipment.setEventId(completeShipmentBinding.eventId.getText().toString());
@@ -259,12 +260,14 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
                     completeShipmentBinding.eventType.setText(eventModel.getEvent());
                     completeShipmentBinding.partnerNameEdt.setText(eventModel.getPartner());
                     completeShipmentBinding.eventId.requestFocus();
+                    partner_id_value = eventModel.getPartner_id();
                 }
             }else{
                     completeShipmentBinding.eventId.setText(eventModel.getEvent_id());
                     completeShipmentBinding.eventType.setText(eventModel.getEvent());
                     completeShipmentBinding.partnerNameEdt.setText(eventModel.getPartner());
                     completeShipmentBinding.eventId.requestFocus();
+                    partner_id_value = eventModel.getPartner_id();
                 }
             }
 

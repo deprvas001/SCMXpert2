@@ -55,7 +55,7 @@ public class UpdateEvent extends BaseActivity implements View.OnClickListener , 
     private List<String> partner_list = new ArrayList<>();
     SessionManager session;
     UpdateEventViewModel viewModel;
-    String user_name="",partner_name="",token="",partner_id="",reference_id="",customer_id="";
+    String user_name="",partner_name="",token="",partner_id="",reference_id="",customer_id="",partner_id_value="";
     ShipmentStatus shipmentViewModel;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,8 +135,10 @@ public class UpdateEvent extends BaseActivity implements View.OnClickListener , 
                                     String partner = updateEvent.get(i).getPartner_from();
                                     String event = updateEvent.get(i).getEvent_Name();
                                     String status = updateEvent.get(i).getEvent_status();
-                                    String date = updateEvent.get(i).getEvent_exec_date();
-                                    UpdateEventModel model = new UpdateEventModel(event_id,partner,event,date,status);
+                                    String date = updateEvent.get(i).getShip_date_fromBP();
+                                    String partner_id = updateEvent.get(i).getPartner();
+
+                                    UpdateEventModel model = new UpdateEventModel(event_id,partner,event,date,status,partner_id);
                                     event_list.add(model);
                                 }
 
@@ -170,6 +172,7 @@ public class UpdateEvent extends BaseActivity implements View.OnClickListener , 
                          updateEventBinding.eventTypeEt.setText(eventModel.getEvent());
                          updateEventBinding.partnerNameEdt.setText(eventModel.getPartner());
                          partner_id = eventModel.getPartner();
+                         partner_id_value = eventModel.getPartner_id();
                          updateEventBinding.eventIdEt.requestFocus();
                      }
                  }else{
@@ -177,6 +180,7 @@ public class UpdateEvent extends BaseActivity implements View.OnClickListener , 
                      updateEventBinding.eventTypeEt.setText(eventModel.getEvent());
                      updateEventBinding.partnerNameEdt.setText(eventModel.getPartner());
                      partner_id = eventModel.getPartner();
+                     partner_id_value = eventModel.getPartner_id();
                      updateEventBinding.eventIdEt.requestFocus();
                  }
             }
@@ -196,7 +200,7 @@ public class UpdateEvent extends BaseActivity implements View.OnClickListener , 
 
                 reference_type_list = response.getReference_type();
                 reference_type_list.add(0,getString(R.string.select_reference));
-                reference_Adapter = new ArrayAdapter<>(UpdateEvent.this, android.R.layout.simple_spinner_item, reference_type_list);
+                reference_Adapter = new ArrayAdapter<>(UpdateEvent.this, R.layout.spinner_item_layout, reference_type_list);
                 reference_Adapter.setDropDownViewResource(R.layout.spinner_item);
 
                 // attaching data adapter to spinner
@@ -204,7 +208,7 @@ public class UpdateEvent extends BaseActivity implements View.OnClickListener , 
 
                 partner_list = response.getPartner_id();
                 partner_list.add(0,getString(R.string.select_partner));
-                partner_Adapter = new ArrayAdapter<>(UpdateEvent.this, android.R.layout.simple_spinner_item, partner_list);
+                partner_Adapter = new ArrayAdapter<>(UpdateEvent.this, R.layout.spinner_item_layout, partner_list);
                 partner_Adapter.setDropDownViewResource(R.layout.spinner_item);
 
                 // attaching data adapter to spinner
@@ -302,7 +306,8 @@ public class UpdateEvent extends BaseActivity implements View.OnClickListener , 
         UpdateSendRequest updateSendRequest = new UpdateSendRequest();
 
         updateSendRequest.setShipment_number(shippment.getShipment_id());
-        updateSendRequest.setPartner(event_partner_id);
+     //   updateSendRequest.setPartner_from(event_partner_id);
+        updateSendRequest.setPartner(partner_id_value);
         updateSendRequest.setEvent_type(eventType);
         updateSendRequest.setDate_time(getDatetime());
         updateSendRequest.setEvent_id(eventId);

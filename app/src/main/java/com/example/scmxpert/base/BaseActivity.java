@@ -41,14 +41,14 @@ public class BaseActivity extends AppCompatActivity {
                 .setMessage(message)
                 .setCancelable(false)
                 .setPositiveButton("Ok", (dialog, which) -> {
-                    builder.create().dismiss();
+                   dialog.dismiss();
                 });
-        builder.create().show();
+        builder.show();
     }
 
     public String getDatetime() {
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss Z", Locale.ENGLISH);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss SSSZ");
         String timezone = sdf.format(c.getTime());
         return timezone;
     }

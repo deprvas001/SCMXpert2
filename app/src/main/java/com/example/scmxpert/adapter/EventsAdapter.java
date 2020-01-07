@@ -69,7 +69,7 @@ public class EventsAdapter extends RecyclerView.Adapter<EventsAdapter.MyViewHold
         holder. event_status.setText(updateEvent.getEvent_status());
         holder. partner.setText(updateEvent.getPartner());*/
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
         /*try {
             if(updateEvent.getDate() !=null)
                 holder.date.setText(sdf1.format(sdf.parse(updateEvent.getDate())));

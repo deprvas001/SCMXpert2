@@ -208,7 +208,7 @@ public class FragmentOne extends Fragment implements View.OnClickListener {
         fragmentOneBinding.shipmentLayout.customerShippmentId.setText(shippment.getShipment_id());
         String created_date = getDate(shippment.getCreated_date());
         String delivery_date = getDate(shippment.getDelivery_date());
-        /*SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
 
         if(shippment.getCreated_date()!=null && shippment.getDelivery_date()!=null){
@@ -222,13 +222,13 @@ public class FragmentOne extends Fragment implements View.OnClickListener {
         }else{
             fragmentOneBinding.shipmentLayout.createDate.setText("");
             fragmentOneBinding.shipmentLayout.deliverDate.setText("");
-        }*/
+        }
 
         fragmentOneBinding.shipmentLayout.fromDate.setText("From- "+shippment.getRoute_form());
         fragmentOneBinding.shipmentLayout.toDate.setText("To- "+shippment.getRoute_to());
         fragmentOneBinding.shipmentLayout.status.setText("Status: "+shippment.getDelivery_status());
-        fragmentOneBinding.shipmentLayout.createDate.setText(created_date);
-        fragmentOneBinding.shipmentLayout.deliverDate.setText(delivery_date);
+       /* fragmentOneBinding.shipmentLayout.createDate.setText(created_date);
+        fragmentOneBinding.shipmentLayout.deliverDate.setText(delivery_date);*/
 
         if(shippment.getDelivery_status()!=null){
             if(shippment.getDelivery_status().equals("Delivered")){

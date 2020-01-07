@@ -68,14 +68,17 @@
                         android:layout_height="50dp"
                         android:background="@drawable/edit_background"
                         android:gravity="center_vertical"
-                        android:padding="10dp"
                         android:inputType="number"
-                        android:textSize="14sp"
-                        android:textColor="@color/shipment_detail"
                         android:maxLength="20"
-                        android:singleLine="true" />
+                        android:padding="10dp"
+                        android:singleLine="true"
+                        android:drawablePadding="10dp"
+                        android:drawableRight="@drawable/barcode"
+                        android:textColor="@color/shipment_detail"
+                        android:textSize="14sp" />
 
                 </com.google.android.material.textfield.TextInputLayout>
+
 
                 <TextView
                     android:layout_width="match_parent"
@@ -162,7 +165,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:padding="10dp"
-                        android:singleLine="true" />
+                         />
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -220,6 +223,7 @@
                     android:layout_marginTop="15dp"
                     android:layout_marginRight="20dp"
                     android:hint="@string/device"
+                    android:visibility="gone"
                     android:textSize="14sp"
                     android:textColorHint="@android:color/black"></TextView>
 
@@ -228,7 +232,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginRight="20dp"
-
+                    android:visibility="gone"
                     android:background="@drawable/edit_background">
 
                     <androidx.appcompat.widget.AppCompatSpinner
@@ -236,9 +240,39 @@
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:padding="10dp"
+                        android:drawableRight="@drawable/barcode"
                         android:singleLine="true" />
 
                 </RelativeLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginRight="20dp"
+                    android:hint="@string/device"
+                    android:textColorHint="@android:color/black">
+
+                    <EditText
+                        android:id="@+id/device_number"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:background="@drawable/edit_background"
+                        android:gravity="center_vertical"
+                        android:inputType="number"
+                        android:maxLength="20"
+                        android:padding="10dp"
+                        android:editable="false"
+                        android:clickable="true"
+                        android:focusable="false"
+                        android:singleLine="true"
+                        android:drawablePadding="10dp"
+                        android:drawableRight="@drawable/barcode"
+                        android:textColor="@color/shipment_detail"
+                        android:textSize="14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
                     android:layout_width="match_parent"
@@ -248,7 +282,6 @@
                     android:layout_marginRight="20dp"
                     android:gravity="right"
                     android:text="@string/scan_device"
-                    android:visibility="gone"
                     android:textColor="@color/view_background" />
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -269,6 +302,7 @@
                         android:gravity="center_vertical"
                         android:padding="10dp"
                         android:focusable="false"
+                        android:textColor="@color/shipment_detail"
                         android:focusableInTouchMode="false"
                         android:editable="false"
                         android:textSize="14sp"

@@ -34,10 +34,8 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.MyView
             created_date = (TextView)view.findViewById(R.id.create_date);
             delivery_date = (TextView)view.findViewById(R.id.deliver_date);
             progressBar = (ProgressBar)view.findViewById(R.id.progressBar);
-
         }
     }
-
 
     public ShipmentAdapter(List<Shippment> shipmentList) {
         this.shipmentList = shipmentList;
@@ -55,7 +53,7 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.MyView
     public void onBindViewHolder(MyViewHolder holder, int position) {
         Shippment shippment = shipmentList.get(position);
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
         try {
             if(shippment.getCreated_date()!=null ){
                 holder.created_date.setText(sdf1.format(sdf.parse(shippment.getCreated_date())));

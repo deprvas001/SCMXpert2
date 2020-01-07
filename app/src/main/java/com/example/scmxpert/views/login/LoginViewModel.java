@@ -21,8 +21,4 @@ public class LoginViewModel extends ViewModel {
                 mutableLiveData.setValue(loginApiResponse));
         return mutableLiveData;
     }
-
-
-
-
 }

@@ -53,10 +53,20 @@ public class UpdateEventAdapter  extends RecyclerView.Adapter<UpdateEventAdapter
         holder. event_status.setText(updateEvent.getEvent_status());
         holder. partner.setText(updateEvent.getPartner());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
+
+      /*  if(updateEvent.getDate() !=null)
+            holder.date.setText(updateEvent.getDate());
+        else{
+            holder.date.setText("");
+        }*/
+
         try {
             if(updateEvent.getDate() !=null)
             holder.date.setText(sdf1.format(sdf.parse(updateEvent.getDate())));
+            else{
+                holder.date.setText("");
+            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -68,7 +78,6 @@ public class UpdateEventAdapter  extends RecyclerView.Adapter<UpdateEventAdapter
                 update.setVisibility(View.VISIBLE);
             }
         }
-
     }
 
     @Override

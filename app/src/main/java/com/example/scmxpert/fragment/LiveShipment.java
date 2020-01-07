@@ -34,10 +34,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
-
 import static android.content.Context.MODE_PRIVATE;
-import static com.example.scmxpert.constants.ApiConstants.CREATED_BY;
-import static com.example.scmxpert.constants.ApiConstants.CUSTOMER_NAME;
 import static com.example.scmxpert.constants.ApiConstants.SHARED_PREF_NAME;
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
@@ -99,7 +96,7 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.fab:
-              startActivity(new Intent(getActivity(), MapHome.class));
+                startActivity(new Intent(getActivity(), MapHome.class));
                 break;
         }
     }
@@ -151,7 +148,6 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
                                         String status = shippment.getDelivery_status();
                                         if(status !=null){
                                             if(!status.equals(getString(R.string.deliver)) ){
-
                                                 if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
                                                     Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
                                                     FilterItemModel itemModel = bundle.getParcelable("filter_data");
@@ -204,6 +200,7 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
 
                             @Override
                             public void onError(Throwable e) {
+
                                 swipeRefresh.setRefreshing(false);
                              //   ((ShipmentHome)getActivity()).hideProgressDialog();
                                 Log.e(TAG, "onError: " + e.getMessage());
@@ -215,7 +212,7 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
 
     @Override
     public void onRefresh() {
-        ((ShipmentHome)getActivity()).getIntent().removeExtra("filter_data");
+        getActivity().getIntent().removeExtra("filter_data");
         getAllShipment();
     }
 

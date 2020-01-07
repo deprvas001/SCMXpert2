@@ -16,7 +16,7 @@ public class RetrofitService {
     // private static Retrofit retrofit;
      private static final String URL= ApiConstants.BASE_URL;
     public static Retrofit getRetrofitInstance() {
-        if (retrofit == null) {
+       /* if (retrofit == null) {*/
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
@@ -33,13 +33,13 @@ public class RetrofitService {
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(httpClient.build())
                     .build();
-        }
+     /*   }*/
         return retrofit;
 
     }
 
     public static Retrofit getRetrofitClient() {
-        if (retrofit == null) {
+       /* if (retrofit == null) {*/
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
@@ -56,7 +56,7 @@ public class RetrofitService {
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(httpClient.build())
                     .build();
-        }
+      /*  }*/
         return retrofit;
 
     }

@@ -6,7 +6,6 @@
     android:clickable="true"
     android:focusable="true"
     android:orientation="vertical"
-
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     >
@@ -69,8 +68,6 @@
         android:id="@+id/deliver_date"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:text="Deliver Date"
-
         android:textSize="11dp"
         android:layout_marginLeft="40dp"
         android:layout_toRightOf="@id/create_date"

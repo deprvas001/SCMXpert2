@@ -17,6 +17,7 @@ public final  class ApiConstants {
     public static final String BASIC ="Basic ";
     public static final String GRANT_TYPE_VAL="password";
     public static final String BASE_URL="https://www.smaas.live:8080/SCMXPert/";
+    public static final String LOGIN_URL="https://www.smaas.live:8087/";
     public static final String CREATE_SHIPMENT =BASE_URL+"createNewShipment";
     public static final String CONTENT_TYPE_VAL="application/x-www-form-urlencoded";
     public static final String BASE_LOGIN_URL = "http://18.218.150.152:8087/oauth/token";

@@ -59,7 +59,7 @@ public class RetrofitClientInstance {
 
     public static Retrofit getClient(Context context) {
 
-        if (retrofit == null) {
+        /*if (retrofit == null) {*/
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
@@ -76,10 +76,35 @@ public class RetrofitClientInstance {
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(httpClient.build())
                     .build();
-        }
+     /*   }*/
         return retrofit;
     }
 
+    public static Retrofit getRetrofitLoginInstance(Context context) {
+        if (retrofit == null) {
+            HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
+            loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
 
+            OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+            httpClient.readTimeout(30, TimeUnit.SECONDS)
+                    .connectTimeout(30, TimeUnit.SECONDS)
+                    .writeTimeout(30, TimeUnit.SECONDS)
+                    .addInterceptor(loggingInterceptor)
+                    .build();
+
+            retrofit = new Retrofit.Builder()
+                    .baseUrl("https://www.smaas.live:8087/")
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(httpClient.build())
+                    .build();
+        }
+        return retrofit;
+
+    }
+
+    public static Retrofit setRetrofit(){
+        return retrofit = null;
+    }
 
 }

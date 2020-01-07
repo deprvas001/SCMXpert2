@@ -17,6 +17,7 @@ import com.example.scmxpert.model.UserDetails;
 import com.example.scmxpert.model.filter.FilterGetResponse;
 import com.example.scmxpert.model.forgotModel.ForgotRequestModel;
 import com.example.scmxpert.model.forgotModel.ForgotResponse;
+import com.example.scmxpert.model.loginModel.LoginResponse;
 
 import java.util.List;
 
@@ -44,6 +45,14 @@ public interface CompleteShipment {
 
     @GET("userTotaldetails/{id}")
     Single<UserDetails> getUserDetails(@Path("id") String id);
+
+    @FormUrlEncoded
+    @POST("oauth/token")
+    Single<LoginResponse> loginUser(@Header ("Content-Type") String content_type,
+                                  @Header ("Authorization") String header,
+                                  @Field("username") String userName,
+                                  @Field("password") String password,
+                                  @Field("grant_type") String grantType);
 
 
     @GET("getShipmentTransactionDeviceData/{id}")

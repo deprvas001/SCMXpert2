@@ -8,7 +8,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -35,6 +38,7 @@ import com.example.scmxpert.model.createShipment.CreateShipmentRequest;
 import com.example.scmxpert.service.RetrofitClientInstance;
 import com.example.scmxpert.viewClick.RecyclerItemTouchHelper;
 import com.example.scmxpert.views.AddRoute;
+import com.example.scmxpert.views.QrCodeScreen;
 import com.example.scmxpert.views.ShipmentHome;
 
 import java.text.ParseException;
@@ -61,6 +65,7 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
     private DatePickerDialog mDatePickerDialog;
     private EventsAdapter mAdapter;
     public static final int QRCODE_REQUEST_CODE = 99;
+    public static final int QRCODE_DEVICE=100;
     private List<String> reference_type_list = new ArrayList<>();
     private List<String> device_id_list = new ArrayList<>();
     private List<String> good_type_list = new ArrayList<>();
@@ -103,6 +108,36 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
         createShipmentBinding.routeSpinner.setOnItemSelectedListener(this);
         createShipmentBinding.deviceSpinner.setOnItemSelectedListener(this);
         createShipmentBinding.goodsSpinner.setOnItemSelectedListener(this);
+        createShipmentBinding.deviceNumber.setOnClickListener(this);
+        createShipmentBinding.shipmentNumber.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                final int DRAWABLE_RIGHT = 2;
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (createShipmentBinding.shipmentNumber.getRight() - createShipmentBinding.shipmentNumber.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())){
+                        i = new Intent(CreateShipment.this, QrCodeScreen.class);
+                        startActivityForResult(i, QRCODE_REQUEST_CODE);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
+        createShipmentBinding.deviceNumber.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent event) {
+                final int DRAWABLE_RIGHT = 2;
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (createShipmentBinding.deviceNumber.getRight() - createShipmentBinding.deviceNumber.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())){
+                        i = new Intent(CreateShipment.this, QrCodeScreen.class);
+                        startActivityForResult(i, QRCODE_DEVICE);
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         setDateTimeField();
         createShipmentBinding.expectDate.setOnTouchListener(new View.OnTouchListener() {
@@ -134,8 +169,12 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.shipment_number:
-               /*  i = new Intent(CreateShipment.this, QrCodeScreen.class);
+              /*   i = new Intent(CreateShipment.this, QrCodeScreen.class);
                 startActivityForResult(i, QRCODE_REQUEST_CODE);*/
+                break;
+
+            case R.id.device_number:
+                showDeviceList();
                 break;
 
            /* case R.id.expect_date:
@@ -171,9 +210,9 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
                         showAlertDialog(CreateShipment.this, getString(R.string.type_reference_empty));
                     } else if (route_id.isEmpty()) {
                         showAlertDialog(CreateShipment.this, getString(R.string.route_empty));
-                    } /*else if (device_detail_data.isEmpty()) {
+                    } else if (createShipmentBinding.deviceNumber.getText().toString().isEmpty()) {
                         showAlertDialog(CreateShipment.this, getString(R.string.device_empty));
-                    }*/ else if (expect_date.isEmpty()) {
+                    } else if (expect_date.isEmpty()) {
                         showAlertDialog(CreateShipment.this, getString(R.string.expect_date_empty));
                     } else if (goods_data.isEmpty()) {
                         showAlertDialog(CreateShipment.this, getString(R.string.goods_empty));
@@ -194,7 +233,11 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
             if (requestCode == QRCODE_REQUEST_CODE) {
                 String qr_code = data.getExtras().getString(QRCODE_KEY);
                 createShipmentBinding.shipmentNumber.setText(qr_code);
+            }else if (requestCode == QRCODE_DEVICE) {
+                String qr_code = data.getExtras().getString(QRCODE_KEY);
+                createShipmentBinding.deviceNumber.setText(qr_code);
             }
+
         }
     }
 
@@ -255,15 +298,17 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
         device_id_list = dropDownItem.getDeviceId();
         reference_type_list = dropDownItem.getReference_type();
         good_type_list.add(0, "Select Goods");
-        device_id_list.add(0, "Select Device");
+    //    device_id_list.add(0, "Select Device");
         route_list.add(0, "Select Route");
         reference_type_list.add(0, "Select Reference");
+
 
         RouteSpinnerData route_start = new RouteSpinnerData();
         route_start.setRoute_from("Select Route");
         route_start.setRoute_to("");
         route_start.setMode_of_transport("");
         route_start.setInco_term("");
+
 
         route_data.add(0, route_start);
         for (ShipmentGoods route : dropDownItem.getRoutes_type()) {
@@ -294,26 +339,25 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
             // route_list.add(route.getFrom()+","+route.getTo()+","+route.getMode_of_transport()+","+route.getInco_term());
         }
 
-        device_Adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, device_id_list);
-        device_Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        device_Adapter = new ArrayAdapter<>(this, R.layout.spinner_item_layout, device_id_list);
+        device_Adapter.setDropDownViewResource(R.layout.spinner_item);
 
         // attaching data adapter to spinner
         createShipmentBinding.deviceSpinner.setAdapter(device_Adapter);
 
-        reference_Adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, reference_type_list);
-        reference_Adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        reference_Adapter = new ArrayAdapter<>(this, R.layout.spinner_item_layout, reference_type_list);
+        reference_Adapter.setDropDownViewResource(R.layout.spinner_item);
 
         createShipmentBinding.typeReference.setAdapter(reference_Adapter);
 
-        good_adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, goodsItems);
-        good_adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        good_adapter = new ArrayAdapter<>(this, R.layout.spinner_item_layout, goodsItems);
+        good_adapter.setDropDownViewResource(R.layout.spinner_item);
 
         // attaching data adapter to spinner
         createShipmentBinding.goodsSpinner.setAdapter(good_adapter);
 
-        route_adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, route_data);
+        route_adapter = new ArrayAdapter<>(this, R.layout.spinner_item_layout, route_data);
         route_adapter.setDropDownViewResource(R.layout.spinner_item);
-
         // attaching data adapter to spinner
         createShipmentBinding.routeSpinner.setAdapter(route_adapter);
 
@@ -362,8 +406,8 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
             shipmentRequest.setRouteTo(routeSpinnerData.getRoute_to());
             shipmentRequest.setGoodsId(goods_id_data);
             shipmentRequest.setGoodsType(goods_data);
-            shipmentRequest.setDeviceId(device_detail_data);
-          //  shipmentRequest.setDeviceId("12345");
+            shipmentRequest.setParnterFrom(partner_name);
+            shipmentRequest.setDeviceId(createShipmentBinding.deviceNumber.getText().toString());
             shipmentRequest.setAllEvents(createEventList);
             shipmentRequest.setIncoTerms(routeSpinnerData.getInco_term());
             shipmentRequest.setMode(routeSpinnerData.getMode_of_transport());
@@ -375,7 +419,7 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
 
         viewModel = ViewModelProviders.of(this).get(CreateShipmentViewModel.class);
 
-       /* viewModel.createShipment(token,shipmentRequest).observe(this, apiResponse -> {
+        viewModel.createShipment(token,shipmentRequest).observe(this, apiResponse -> {
 
             if (apiResponse == null) {
                 hideProgressDialog();
@@ -386,9 +430,10 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
                  hideProgressDialog();
                 // call is successful
                 //  Log.i(TAG, "Data response is " + apiResponse.getPosts());
-                Toast.makeText(this,"Shipment Create Successfully.", Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(this, ShipmentHome.class));
-                finish();
+                showCustomDialog(CreateShipment.this, getString(R.string.shipment_created_successful));
+              //  Toast.makeText(this,"Shipment Create Successfully.", Toast.LENGTH_SHORT).show();
+
+             //   finish();
             } else {
                 // call failed.
                 hideProgressDialog();
@@ -396,8 +441,7 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
                 Toast.makeText(CreateShipment.this, "Error is " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 // Log.e(TAG, "Error is " + e.getLocalizedMessage());
             }
-
-        });*/
+        });
     }
 
     @Override
@@ -428,8 +472,6 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
             case R.id.device_spinner:
                 if (position > 0) {
                     device_detail_data = createShipmentBinding.deviceSpinner.getSelectedItem().toString();
-                }else{
-                    device_detail_data = "344333";
                 }
                 break;
 
@@ -456,8 +498,8 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
 
     private String timeCreate() {
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss Z", Locale.ENGLISH);
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+     //   sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         String timezone = sdf.format(c.getTime());
         return timezone;
     }
@@ -514,8 +556,8 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
-                SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss Z", Locale.ENGLISH);
-                sd.setTimeZone(TimeZone.getTimeZone("UTC"));
+                SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+              //  sd.setTimeZone(TimeZone.getTimeZone("UTC"));
                 final Date startDate = newDate.getTime();
                 String fdate = sd.format(startDate);
                 createShipmentBinding.expectDate.setText(fdate);
@@ -537,7 +579,47 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
             e.printStackTrace();
         }
 
-        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         return  outputFormat.format(d).toString();
+    }
+
+    public void showCustomDialog(Context context, String message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setTitle((createShipmentBinding.shipmentDetails.internalShipmentId.getText().toString()))
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("Ok", (dialog, which) -> {
+                    dialog.dismiss();
+                    startActivity(new Intent(this, ShipmentHome.class));
+                    finish();
+                });
+        builder.show();
+    }
+
+   private void showDeviceList(){
+       AlertDialog.Builder builder = new AlertDialog.Builder(CreateShipment.this);
+       builder.setTitle("Select Device");
+
+       String device_list[] = new String[device_id_list.size()];
+
+       // ArrayList to Array Conversion
+       for (int j = 0; j < device_id_list.size(); j++) {
+
+           // Assign each value to String array
+           device_list[j] = device_id_list.get(j);
+       }
+// add a list
+
+       builder.setItems(device_list, new DialogInterface.OnClickListener() {
+           @Override
+           public void onClick(DialogInterface dialog, int which) {
+              // createShipmentBinding.deviceNumber.setText(dialog.);
+              createShipmentBinding.deviceNumber.setText(device_list[which]);
+           }
+       });
+
+// create and show the alert dialog
+       AlertDialog dialog = builder.create();
+       dialog.show();
     }
 }

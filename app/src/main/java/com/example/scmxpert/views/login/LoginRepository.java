@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Base64;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.example.scmxpert.constants.ApiConstants;
 import com.example.scmxpert.model.loginModel.LoginApiResponse;
@@ -32,7 +33,7 @@ public class LoginRepository {
     }
 
 
-     public MutableLiveData<LoginApiResponse> loginUser(Context context, String userName, String password ){
+     public LiveData<LoginApiResponse> loginUser(Context context, String userName, String password ){
        final MutableLiveData<LoginApiResponse> loginResponseLiveData = new MutableLiveData<>();
          String creds = String.format("%s:%s", ApiConstants.AUTH_USER_NAME, ApiConstants.AUTH_PASSWORD);
          String auth1 = ApiConstants.BASIC + Base64.encodeToString(creds.getBytes(), Base64.NO_WRAP);
@@ -42,7 +43,10 @@ public class LoginRepository {
              public void onResponse(@NonNull Call<LoginResponse> call,@NonNull Response<LoginResponse> response) {
                  if(response.code() == 401){
                      loginResponseLiveData.setValue(null);
-                 }else{
+                 }else if(response.code() == 400){
+                     loginResponseLiveData.setValue(null);
+                 }
+                 else {
                      if(response.isSuccessful()){
                          loginResponseLiveData.setValue(new LoginApiResponse(response.body()));
                      }

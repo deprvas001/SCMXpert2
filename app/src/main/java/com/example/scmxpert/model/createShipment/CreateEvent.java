@@ -3,15 +3,7 @@ package com.example.scmxpert.model.createShipment;
 import com.google.gson.annotations.SerializedName;
 
 public class CreateEvent {
-  /*  "event_Id": "E0070",
-            "bp_Id": "BP0002",
-            "partner": "SpiceJet Transport Ltd.",
-            "event": "Preparation",
-            "evidence": "yes",
-            "event_Status": "Initialized"*/
-
-
-    @SerializedName("event Id")
+    @SerializedName("event_Id")
     private String eventId;
     private String bp_Id;
     private String partner;
