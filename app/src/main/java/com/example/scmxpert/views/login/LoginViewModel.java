@@ -17,8 +17,12 @@ public class LoginViewModel extends ViewModel {
     }
 
     public LiveData<LoginApiResponse> getLoginUser(Context context,String username,String password){
-        mutableLiveData.addSource(loginRepository.loginUser(context,username,password), loginApiResponse ->
-                mutableLiveData.setValue(loginApiResponse));
+        mutableLiveData.addSource(loginRepository.loginUser(context,username,password), new Observer<LoginApiResponse>() {
+            @Override
+            public void onChanged(LoginApiResponse loginApiResponse) {
+                mutableLiveData.setValue(loginApiResponse);
+            }
+        });
         return mutableLiveData;
     }
 }

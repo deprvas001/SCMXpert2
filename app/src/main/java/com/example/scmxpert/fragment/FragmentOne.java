@@ -209,24 +209,65 @@ public class FragmentOne extends Fragment implements View.OnClickListener {
         String created_date = getDate(shippment.getCreated_date());
         String delivery_date = getDate(shippment.getDelivery_date());
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf1 = new SimpleDateFormat("dd-MM-yyyy");
 
-        if(shippment.getCreated_date()!=null && shippment.getDelivery_date()!=null){
-            try {
-                fragmentOneBinding.shipmentLayout.createDate.setText(sdf1.format(sdf.parse(shippment.getCreated_date())));
-                fragmentOneBinding.shipmentLayout.deliverDate.setText(sdf1.format(sdf.parse(shippment.getDelivery_date())));
-            } catch (ParseException e) {
-                e.printStackTrace();
+        if(!shippment.getDelivery_status().equals(getString(R.string.deliver))){
+
+            if(shippment.getCreated_date()!=null && shippment.getEst_delivery_date()!=null){
+                try {
+                    fragmentOneBinding.shipmentLayout.createDate.setText(sdf1.format(sdf.parse(shippment.getCreated_date())));
+                    fragmentOneBinding.shipmentLayout.deliverDate.setText(sdf1.format(sdf.parse(shippment.getEst_delivery_date())));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    if(shippment.getEst_delivery_date()!=null)
+                    fragmentOneBinding.shipmentLayout.deliverDate.setText(shippment.getEst_delivery_date());
+                    else{
+                        fragmentOneBinding.shipmentLayout.deliverDate.setText("NA");
+                    }
+                }
+
+            }else{
+                fragmentOneBinding.shipmentLayout.createDate.setText("NA");
+                fragmentOneBinding.shipmentLayout.deliverDate.setText("NA");
             }
-
         }else{
-            fragmentOneBinding.shipmentLayout.createDate.setText("");
-            fragmentOneBinding.shipmentLayout.deliverDate.setText("");
+            if(shippment.getCreated_date()!=null && shippment.getDelivery_date()!=null){
+                try {
+                    fragmentOneBinding.shipmentLayout.createDate.setText(sdf1.format(sdf.parse(shippment.getCreated_date())));
+                    fragmentOneBinding.shipmentLayout.deliverDate.setText(sdf1.format(sdf.parse(shippment.getDelivery_date())));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    if(shippment.getDelivery_date()!=null){
+                        fragmentOneBinding.shipmentLayout.deliverDate.setText(shippment.getDelivery_date());
+                    }else{
+                        fragmentOneBinding.shipmentLayout.deliverDate.setText("NA");
+                    }
+                }
+
+            }else{
+                fragmentOneBinding.shipmentLayout.createDate.setText("NA");
+                fragmentOneBinding.shipmentLayout.deliverDate.setText("NA");
+            }
         }
 
-        fragmentOneBinding.shipmentLayout.fromDate.setText("From- "+shippment.getRoute_form());
-        fragmentOneBinding.shipmentLayout.toDate.setText("To- "+shippment.getRoute_to());
-        fragmentOneBinding.shipmentLayout.status.setText("Status: "+shippment.getDelivery_status());
+         if(shippment.getRoute_form()!=null){
+             fragmentOneBinding.shipmentLayout.fromDate.setText(shippment.getRoute_form());
+         }else{
+             fragmentOneBinding.shipmentLayout.fromDate.setText("NA");
+         }
+
+         if(shippment.getRoute_to()!=null){
+             fragmentOneBinding.shipmentLayout.toDate.setText(shippment.getRoute_to());
+         }else{
+             fragmentOneBinding.shipmentLayout.toDate.setText("NA");
+         }
+
+        if(shippment.getDelivery_status()!=null){
+            fragmentOneBinding.shipmentLayout.status.setText("Status: "+shippment.getDelivery_status());
+        }else{
+            fragmentOneBinding.shipmentLayout.status.setText("Status: NA");
+        }
+
        /* fragmentOneBinding.shipmentLayout.createDate.setText(created_date);
         fragmentOneBinding.shipmentLayout.deliverDate.setText(delivery_date);*/
 
@@ -266,6 +307,7 @@ public class FragmentOne extends Fragment implements View.OnClickListener {
 
                 });
         builder.create().show();
+
     }
 
     private void startCompleteEvent(){

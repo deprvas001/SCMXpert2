@@ -20,6 +20,7 @@ import com.example.scmxpert.apiInterface.CompleteShipment;
 import com.example.scmxpert.constants.ApiConstants;
 import com.example.scmxpert.helper.SessionManager;
 import com.example.scmxpert.map.Map;
+import com.example.scmxpert.model.FilterResponse;
 import com.example.scmxpert.model.Shippment;
 import com.example.scmxpert.model.filter.FilterItemModel;
 import com.example.scmxpert.service.RetrofitClientInstance;
@@ -28,6 +29,7 @@ import com.example.scmxpert.views.MapHome;
 import com.example.scmxpert.views.ShipmentDetails;
 import com.example.scmxpert.views.ShipmentHome;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +42,7 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.google.android.gms.plus.PlusOneDummyView.TAG;
 
-public class DeliveredShipment extends Fragment implements View.OnClickListener , SwipeRefreshLayout.OnRefreshListener{
+public class DeliveredShipment extends Fragment implements View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
     View view;
     private RecyclerView recyclerView;
     private ShipmentAdapter mAdapter;
@@ -49,21 +51,21 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
     SessionManager session;
     private String user_name = "";
     private String partner_name = "";
-    private String customer_id="";
+    private String customer_id = "";
     private String token = "";
     private CompositeDisposable disposable = new CompositeDisposable();
     private ArrayList<Shippment> deliverdList = new ArrayList<>();
     private ArrayList<Shippment> liveList = new ArrayList<>();
-    int live_count =0,deliver_count=0;
+    int live_count = 0, deliver_count = 0;
 
-    public DeliveredShipment(){
+    public DeliveredShipment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.live_shipment,container,false);
+        view = inflater.inflate(R.layout.live_shipment, container, false);
         initializeView();
         getAllShipment();
 
@@ -79,7 +81,7 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity(), recyclerView, new RecyclerTouchListener.ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Shippment shippment =  deliverdList.get(position);
+                Shippment shippment = deliverdList.get(position);
                 Intent intent = new Intent(getActivity(), ShipmentDetails.class);
                 intent.putExtra(ApiConstants.SHIPMENT, shippment);
                 startActivity(intent);
@@ -94,16 +96,16 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.fab:
                 startActivity(new Intent(getActivity(), MapHome.class));
                 break;
         }
     }
 
-    public void initializeView(){
-        recyclerView = (RecyclerView)view.findViewById(R.id.recycler_view);
-        fab = (FloatingActionButton)view.findViewById(R.id.fab);
+    public void initializeView() {
+        recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        fab = (FloatingActionButton) view.findViewById(R.id.fab);
         swipeRefresh = view.findViewById(R.id.swiperefresh);
         fab.setImageResource(R.drawable.map_show);
         fab.setOnClickListener(this);
@@ -119,7 +121,7 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
 
     private void getAllShipment() {
         swipeRefresh.setRefreshing(true);
-      //  ((ShipmentHome)getActivity()).showProgressDialog(getResources().getString(R.string.loading));
+        //  ((ShipmentHome)getActivity()).showProgressDialog(getResources().getString(R.string.loading));
         CompleteShipment apiService = RetrofitClientInstance.getClient(getActivity()).create(CompleteShipment.class);
         disposable.add(
                 apiService.getAllShipmentDetails(customer_id)
@@ -129,67 +131,103 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
                             @Override
                             public void onSuccess(List<Shippment> notes) {
                                 swipeRefresh.setRefreshing(false);
-                              //  ((ShipmentHome)getActivity()).hideProgressDialog();
+                                //  ((ShipmentHome)getActivity()).hideProgressDialog();
                                 liveList.clear();
                                 deliverdList.clear();
-                                for(Shippment shippment:notes){
-                                    try {
-                                        String status = shippment.getDelivery_status();
-                                        if(status !=null){
-                                            if(shippment.getDelivery_status().equals(getString(R.string.deliver))){
+                                if (notes.size() > 0) {
+                                    for (Shippment shippment : notes) {
+                                        try {
+                                            String status = shippment.getDelivery_status();
+                                            if (status != null) {
+                                                if (shippment.getDelivery_status().equals(getString(R.string.deliver))) {
 
-                                                if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
-                                                    Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
-                                                    FilterItemModel itemModel = bundle.getParcelable("filter_data");
+                                                    if (((ShipmentHome) getActivity()).getIntent().getExtras() != null) {
+                                                        Bundle bundle = ((ShipmentHome) getActivity()).getIntent().getExtras();
 
-                                                    if(shippment.getRoute_form().equals(itemModel.getFrom()) ||
+                                                        ArrayList<FilterResponse> itemModel = bundle.getParcelableArrayList("filter_data");
+
+                                                        for (int i = 0; i < itemModel.size(); i++) {
+                                                            FilterResponse response = (FilterResponse) itemModel.get(i);
+
+                                                            if (shippment.getShipment_id().equals(response.getShipment_id())) {
+                                                                deliverdList.add(shippment);
+                                                            }
+
+                                                        }
+
+                                                       /* if(shippment.getRoute_form().equals(itemModel.getFrom())
+                                                                || shippment.getRoute_to().equals(itemModel.getTo())
+                                                                || shippment.getGoods_desc().equals(itemModel.getGoods())
+                                                               || shippment.getType_reference().equals(itemModel. getReference())
+                                                                || shippment.getDepartments().equals(itemModel.getDep_type())
+                                                            *//*|| shippment.getDevice_id().equals(itemModel.getDevice())*//* *//*||
                                                        shippment.getRoute_to().equals(itemModel.getTo()) ||
                                                             shippment.getGoods_desc().equals(itemModel.getGoods()) ||
                                                             shippment.getDevice_id().equals(itemModel.getDevice()) ||
                                                             shippment.getType_reference().equals(itemModel.getReference()) ||
-                                                            shippment.getDepartments().equals(itemModel.getDep_type())){
+                                                            shippment.getDepartments().equals(itemModel.getDep_type())*//*){
+                                                            deliverdList.add(shippment);
+                                                        }*/
+                                                    } else {
                                                         deliverdList.add(shippment);
                                                     }
-                                                }else {
-                                                    deliverdList.add(shippment);
-                                                }
 
-                                            }else{
-                                                if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
-                                                    Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
-                                                    FilterItemModel itemModel = bundle.getParcelable("filter_data");
+                                                } else {
+                                                    if (((ShipmentHome) getActivity()).getIntent().getExtras() != null) {
+                                                        Bundle bundle = ((ShipmentHome) getActivity()).getIntent().getExtras();
 
-                                                    if(shippment.getRoute_form().equals(itemModel.getFrom()) ||
+                                                        ArrayList<FilterResponse> itemModel = bundle.getParcelableArrayList("filter_data");
+
+                                                        for (int i = 0; i < itemModel.size(); i++) {
+                                                            FilterResponse response = (FilterResponse) itemModel.get(i);
+
+                                                            if (shippment.getShipment_id().equals(response.getShipment_id())) {
+                                                                liveList.add(shippment);
+                                                            }
+
+                                                        }
+
+                                                      /*  if(shippment.getRoute_form().equals(itemModel.getFrom())
+                                                                || shippment.getRoute_to().equals(itemModel.getTo())
+                                                                || shippment.getGoods_desc().equals(itemModel.getGoods())
+                                                                || shippment.getType_reference().equals(itemModel.getReference())
+                                                                || shippment.getDepartments().equals(itemModel.getDep_type())
+                                                            *//*|| shippment.getDevice_id().equals(itemModel.getDevice())*//* *//*||
                                                             shippment.getRoute_to().equals(itemModel.getTo()) ||
                                                             shippment.getGoods_desc().equals(itemModel.getGoods()) ||
                                                             shippment.getDevice_id().equals(itemModel.getDevice()) ||
                                                             shippment.getType_reference().equals(itemModel.getReference()) ||
-                                                            shippment.getDepartments().equals(itemModel.getDep_type())
-                                                    ){
+                                                            shippment.getDepartments().equals(itemModel.getDep_type())*//*
+                                                        ){
+                                                            liveList.add(shippment);
+                                                        }*/
+                                                    } else {
                                                         liveList.add(shippment);
                                                     }
-                                                }else {
-
-                                                    liveList.add(shippment);
-
                                                 }
+                                            } else {
+                                                liveList.add(shippment);
                                             }
-                                        }else{
-                                            liveList.add(shippment);
+
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
-                                    }catch (Exception e){
-                                        e.printStackTrace();
                                     }
+                                    if(deliverdList.size()==0){
+                                        Snackbar.make(view, "No Data Available", Snackbar.LENGTH_LONG).show();
+                                    }
+                                    ((ShipmentHome) getActivity()).deliver_count.setText(String.valueOf(deliverdList.size()));
+                                    ((ShipmentHome) getActivity()).live_count.setText(String.valueOf(liveList.size()));
+                                    mAdapter.notifyDataSetChanged();
+                                } else {
+                                    Snackbar.make(view, "No Data Available", Snackbar.LENGTH_LONG).show();
                                 }
-                                ((ShipmentHome)getActivity()).deliver_count.setText(String.valueOf(deliverdList.size()));
-                                ((ShipmentHome)getActivity()).live_count.setText(String.valueOf(liveList.size()));
-                                mAdapter.notifyDataSetChanged();
                             }
 
                             @Override
                             public void onError(Throwable e) {
                                 swipeRefresh.setRefreshing(false);
-                             //   ((ShipmentHome)getActivity()).hideProgressDialog();
+                                //   ((ShipmentHome)getActivity()).hideProgressDialog();
                                 Log.e(TAG, "onError: " + e.getMessage());
                             }
                         })
@@ -199,7 +237,7 @@ public class DeliveredShipment extends Fragment implements View.OnClickListener 
 
     @Override
     public void onRefresh() {
-        ((ShipmentHome)getActivity()).getIntent().removeExtra("filter_data");
+        ((ShipmentHome) getActivity()).getIntent().removeExtra("filter_data");
         getAllShipment();
     }
 

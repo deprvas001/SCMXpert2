@@ -17,6 +17,7 @@
         android:layout_alignParentTop="true"
         android:text="Id"
         android:textSize="18dp"
+        android:textColor="@android:color/black"
         android:textStyle="bold" />
 
     <TextView

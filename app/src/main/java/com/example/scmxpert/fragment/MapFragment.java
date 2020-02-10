@@ -1,17 +1,29 @@
 package com.example.scmxpert.fragment;
 
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.fragment.app.Fragment;
 import com.example.scmxpert.R;
+import com.example.scmxpert.adapter.CustomMarkerInfoWindowView;
+import com.example.scmxpert.apiInterface.CompleteShipment;
 import com.example.scmxpert.constants.ApiConstants;
 import com.example.scmxpert.model.ShipmentDetail;
 import com.example.scmxpert.model.Shippment;
+import com.example.scmxpert.model.UserDetails;
+import com.example.scmxpert.model.WayInfo;
 import com.example.scmxpert.model.WayPoint;
+import com.example.scmxpert.service.RetrofitClientInstance;
+import com.example.scmxpert.views.ShipmentHome;
+import com.example.scmxpert.views.login.LoginScreen;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,11 +39,16 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
+
 public class MapFragment extends Fragment implements OnMapReadyCallback{
     private GoogleMap googleMap;
     Shippment shippment;
     private ArrayList<ShipmentDetail> data = new ArrayList<>();
-
+    private CompositeDisposable disposable_map = new CompositeDisposable();
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.map_fragment_layout, container, false);
@@ -46,7 +63,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
 
     public void getShipmentDetails(){
-        List<WayPoint> userList = new  ArrayList<>();
+
+
+      /*  List<WayPoint> userList = new  ArrayList<>();
         List<LatLng> route_array = new ArrayList<LatLng>();
         String json = String.valueOf(shippment.getWaypoint());
         if(json !=null) {
@@ -88,7 +107,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
             }
         }catch (Exception e){
             e.printStackTrace();
-        }
+        }*/
 
 
 
@@ -136,8 +155,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         CameraPosition googlePlex = CameraPosition.builder()
                 .target(position)
-                .zoom(8)
-                .bearing(0)
+                .zoom(5)
+               // .bearing(0)
                 .tilt(45)
                 .build();
 
@@ -150,28 +169,109 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
                 .icon(BitmapDescriptorFactory.fromResource(iconResID)));*/
     }
 
+    protected Marker createMapMarker(WayInfo wayInfo) {
+            String[] wayPoints = wayInfo.getWayPoints().split(",");
+            String latitude = wayPoints[0];
+            String longitude = wayPoints[1];
+            LatLng position = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+
+        CameraPosition googlePlex = CameraPosition.builder()
+                .target(position)
+                .zoom(3)
+                .bearing(0.5f)
+                .tilt(45)
+                .build();
+
+        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex));
+
+            Marker marker = googleMap.addMarker(new MarkerOptions().position(position));
+            marker.setTag(wayInfo);
+
+            return  marker;
+
+
+        /*return googleMap.addMarker(new MarkerOptions()
+                .position(new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude)))
+                .anchor(0.5f, 0.5f)
+                *//*.title(wayInfo.get(0).getShipment_Num())*//*);
+*/
+              /*  .snippet(snippet)
+                .icon(BitmapDescriptorFactory.fromResource(iconResID)));*/
+
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         this.googleMap = googleMap;
         if(shippment !=null){
-            getShipmentDetails();
+            getWayPoints(shippment.getShipment_id());
         }
+
+        CustomMarkerInfoWindowView markerInfoWindowAdapter = new CustomMarkerInfoWindowView(getActivity());
+        googleMap.setInfoWindowAdapter(markerInfoWindowAdapter);
+
+
+
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                 marker.hideInfoWindow();
+            }
+        });
+
+       /* googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                googleMap.clear();
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.showInfoWindow();
+            }
+        });*/
+       /* googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View v =  inflater.inflate(R.layout.marker_info_window, null);
+                WayInfo wayInfo =(WayInfo) marker.getTag();
+                //  LatLng latLng = arg0.getPosition();
+                TextView tvLat = (TextView) v.findViewById(R.id.shipment_number);
+                *//* TextView tvLng = (TextView) v.findViewById(R.id.tv_lng);*//*
+                tvLat.setText("Latitude:" + wayInfo.getSensorUTC());
+                // tvLng.setText("Longitude:"+ latLng.longitude);
+            }
+        });*/
 
     }
 
-    public void drawLine(List<LatLng> points,String shipment_id) {
+    public void drawLine(List<WayInfo> points) {
+        List<LatLng> route_array = new ArrayList<LatLng>();
+
+
+        for (int i=0;i<points.size();i++){
+            String[] wayPo = points.get(i).getWayPoints().split(",");
+            String lati =wayPo[0];
+            String longi = wayPo[1];
+            LatLng latLng = new LatLng(Double.parseDouble(lati),Double.parseDouble(longi));
+
+            if(!route_array.contains(latLng)){
+                route_array.add(latLng);
+            }
+
+            createMapMarker(points.get(i));
+        }
+
 
        /* List<LatLng> source_destination = new ArrayList<>();
        source_destination.add(points.get(0));
        source_destination.add(points.get(points.size()-1));*/
 
-       for(int i=0;i<points.size();i++){
+       /* for(int i=0;i<points.size();i++){
 
-           LatLng latLng = points.get(i);
-           double lat = latLng.latitude;
-           double longt = latLng.longitude;
-           createMarker(lat,longt,shipment_id);
-       }
+            LatLng latLng = points.get(i);
+            double lat = latLng.latitude;
+            double longt = latLng.longitude;
+            createMarker(lat,longt,shipment_id);
+        }*/
         if (points == null) {
             Log.e("Draw Line", "got null as parameters");
             return;
@@ -179,8 +279,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback{
 
         Polyline line = googleMap.addPolyline(new PolylineOptions().width(3).color(Color.RED));
 
-        line.setPoints(points);
+        line.setPoints(route_array);
     }
 
+    private void getWayPoints(String id){
+        RetrofitClientInstance.setRetrofit();
 
+        CompleteShipment apiService = RetrofitClientInstance.getClient(getActivity()).create(CompleteShipment.class);
+        disposable_map.add(
+                apiService.getWayPoints(id)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeWith(new DisposableSingleObserver<List<WayInfo>>() {
+                            @Override
+                            public void onSuccess(List<WayInfo> wayInfo) {
+                                if(wayInfo.size()>0){
+                                   // createMapMarker(wayInfo);
+                                    drawLine(wayInfo);
+                                }
+                            }
+                            @Override
+                            public void onError(Throwable e) {
+
+                            }
+                        })
+        );
+    }
 }

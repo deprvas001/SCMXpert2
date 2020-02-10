@@ -6,6 +6,7 @@ import com.example.scmxpert.model.CompleteShipmentModel;
 import com.example.scmxpert.model.CreateShipmentDrop;
 import com.example.scmxpert.model.CreateShipmentResponse;
 import com.example.scmxpert.model.DeviceTempData;
+import com.example.scmxpert.model.FilterResponse;
 import com.example.scmxpert.model.GetRouteDetails;
 import com.example.scmxpert.model.ShipmentDetail;
 import com.example.scmxpert.model.Shippment;
@@ -14,12 +15,16 @@ import com.example.scmxpert.model.ApiResponse;
 import com.example.scmxpert.model.UpdateRoute;
 import com.example.scmxpert.model.UpdateSendRequest;
 import com.example.scmxpert.model.UserDetails;
+import com.example.scmxpert.model.WayInfo;
 import com.example.scmxpert.model.filter.FilterGetResponse;
 import com.example.scmxpert.model.forgotModel.ForgotRequestModel;
 import com.example.scmxpert.model.forgotModel.ForgotResponse;
 import com.example.scmxpert.model.loginModel.LoginResponse;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Single;
 import retrofit2.Call;
@@ -30,6 +35,8 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
+import retrofit2.http.Query;
+import retrofit2.http.QueryMap;
 
 public interface CompleteShipment {
     String BASE_URL = ApiConstants.BASE_URL;
@@ -45,6 +52,9 @@ public interface CompleteShipment {
 
     @GET("userTotaldetails/{id}")
     Single<UserDetails> getUserDetails(@Path("id") String id);
+
+    @GET("getWayInfo/{id}")
+    Single<List<WayInfo>> getWayPoints(@Path("id") String id);
 
     @FormUrlEncoded
     @POST("oauth/token")
@@ -69,6 +79,10 @@ public interface CompleteShipment {
 
     @GET("getFiltersData/{id}")
     Single<FilterGetResponse> getFilterData(@Path("id") String id);
+
+    @GET("searchfilter")
+    Single<ArrayList<FilterResponse>> getFilterResponse(@QueryMap HashMap<String,String> filter);
+
 
     @GET("getDeviceDataTemp/{id}")
     Single<List<DeviceTempData>> getDeviceDataTemp(@Path("id") String id);

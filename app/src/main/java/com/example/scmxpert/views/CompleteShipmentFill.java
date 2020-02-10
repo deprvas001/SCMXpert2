@@ -309,7 +309,7 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
             case R.id.complete_shipment_partner:
                 if(position>0){
                     partner_id = adapterView.getSelectedItem().toString();
-                    makeText(this, partner_id, LENGTH_SHORT).show();
+                 //   makeText(this, partner_id, LENGTH_SHORT).show();
                 }else{
                     partner_id="";
                 }
@@ -318,7 +318,7 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
             case R.id.receiving_location:
                 if(position>0){
                    receive_location = adapterView.getSelectedItem().toString();
-                    makeText(this, receive_location, LENGTH_SHORT).show();
+                   // makeText(this, receive_location, LENGTH_SHORT).show();
                 }else{
                     receive_location ="";
                 }
@@ -327,7 +327,7 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
             case R.id.complete_shipment_reference:
                 if(position>0){
                     reference_id = adapterView.getSelectedItem().toString();
-                    makeText(this, reference_id, LENGTH_SHORT).show();
+                   // makeText(this, reference_id, LENGTH_SHORT).show();
                 }else{
                     reference_id ="";
                 }
@@ -336,7 +336,7 @@ public class CompleteShipmentFill extends BaseActivity implements View.OnClickLi
             case R.id.device_return_location:
                 if(position>0){
                     return_location_val = adapterView.getSelectedItem().toString();
-                    makeText(this,  return_location_val, LENGTH_SHORT).show();
+                   // makeText(this,  return_location_val, LENGTH_SHORT).show();
                 }else{
                     return_location_val ="";
                 }

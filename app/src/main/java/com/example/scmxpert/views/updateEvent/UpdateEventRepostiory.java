@@ -3,6 +3,7 @@ package com.example.scmxpert.views.updateEvent;
 import androidx.lifecycle.MutableLiveData;
 import com.example.scmxpert.model.ApiResponse;
 import com.example.scmxpert.model.UpdateSendRequest;
+import com.example.scmxpert.model.createShipment.CreateShipmentApiResponse;
 import com.example.scmxpert.model.updateEventModel.UpdateApiResponse;
 import com.example.scmxpert.networking.RetrofitService;
 import com.example.scmxpert.networking.ShipmentApi;
@@ -37,6 +38,10 @@ public class UpdateEventRepostiory {
             public void onResponse(@NotNull Call<ApiResponse> call, @NotNull Response<ApiResponse> response) {
                 if(response.isSuccessful()){
                     responsiveLiveData.setValue(new UpdateApiResponse(response.body()));
+                }else if(response.code() == 401){
+                    responsiveLiveData.setValue(new UpdateApiResponse(response.code(),String.valueOf(response.errorBody())));
+                }else{
+                    responsiveLiveData.setValue(null);
                 }
             }
 

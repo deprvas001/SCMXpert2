@@ -21,12 +21,11 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/logout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="24dp"
+                    android:layout_height="22dp"
                     android:src="@drawable/logout"
                     android:layout_marginTop="5dp"
                     />
-
 
                 <TextView
                     android:layout_width="0dp"
@@ -55,7 +54,6 @@
             android:orientation="horizontal">
 
         <com.google.android.material.tabs.TabLayout
-
             android:id="@+id/tabs"
             android:layout_width="0dp"
             android:layout_height="52dp"

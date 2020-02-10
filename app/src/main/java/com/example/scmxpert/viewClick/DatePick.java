@@ -44,7 +44,7 @@ public class DatePick implements View.OnClickListener, DatePickerDialog.OnDateSe
         DatePickerDialog dialog = new DatePickerDialog(_context, this,
                 calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
                 calendar.get(Calendar.DAY_OF_MONTH));
-        dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
+      //  dialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         dialog.show();
 
     }

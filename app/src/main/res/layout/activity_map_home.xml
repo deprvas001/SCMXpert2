@@ -17,7 +17,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                >
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/back"
+                    android:layout_width="18dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/back"
+                    android:layout_marginTop="5dp"
+                    />
 
                 <TextView
                     android:layout_width="0dp"
@@ -25,11 +34,9 @@
                     android:gravity="center"
                     android:layout_weight="1"
                     android:text="@string/shipment"
-                    android:paddingLeft="20dp"
                     android:layout_gravity="center"
                     android:textColor="@android:color/white"
-
-                    android:textSize="20sp" />
+                    android:textSize="18sp" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/create_shipment"

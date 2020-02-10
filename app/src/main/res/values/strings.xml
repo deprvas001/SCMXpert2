@@ -4,7 +4,7 @@
     <string name="password">Password</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="log_in">Log in</string>
-    <string name="error_user_empty">User field can not be empty.</string>
+    <string name="error_user_empty">Partner Id field can not be empty.</string>
     <string name="error_passwrod_empty">Password field can not be empty.</string>
     <string name="progress_log_in">Loggin User In</string>
     <string name="reset_password">Reset Password</string>
@@ -18,7 +18,7 @@
     <string name="loading">Loading...</string>
     <string name="shipment_details">Shipment Details</string>
     <string name="complete_shipment">Complete Shipment</string>
-    <string name="update_event">Update Event</string>
+    <string name="update_event">Update Event Shipment</string>
     <string name="share">Share</string>
     <string name="show_all">Show all the entries</string>
     <string name="title_activity_map">Map</string>
@@ -72,7 +72,7 @@
     <string name="standard_duration">Standard Duration</string>
     <string name="duration">Duration</string>
     <string name="good_type">Goods Type</string>
-    <string name="shipment">Shipment</string>
+    <string name="shipment">Shipment Overview</string>
     <string name="partnerid">Partner ID</string>
     <string name="event_name">Event Name</string>
     <string name="no_connection">No internet connection</string>
@@ -124,5 +124,12 @@
     <string name="update_event_status"> No Event to update please click on complete button to complete event</string>
     <string name="complete_status_event">Right now you can only update event</string>
     <string name="internal_server_error">Internal Server Error</string>
-    <string name="shipment_created_successful">Shipment Create Successfully.</string>
+    <string name="shipment_created_successful">has been created</string>
+    <string name="session_expire">Session Expire.Please login again.</string>
+    <string name="dateTime"> Date &amp; Time :- </string>
+    <string name="lat_long">Lat-Long :-</string>
+    <string name="address">Address :-</string>
+    <string name="device_id"><b><font fgcolor='#000000'>Device :-</font></b></string>
+    <string name="shipment_numbers">Shipment Number :-</string>
+    <string name="cancel_txt">Cance;</string>
 </resources>

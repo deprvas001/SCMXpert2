@@ -1,5 +1,7 @@
 package com.example.scmxpert.fragment;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,6 +20,7 @@ import com.example.scmxpert.adapter.ShipmentAdapter;
 import com.example.scmxpert.apiInterface.CompleteShipment;
 import com.example.scmxpert.constants.ApiConstants;
 import com.example.scmxpert.helper.SessionManager;
+import com.example.scmxpert.model.FilterResponse;
 import com.example.scmxpert.model.Shippment;
 import com.example.scmxpert.model.filter.FilterItemModel;
 import com.example.scmxpert.service.RetrofitClientInstance;
@@ -26,6 +29,8 @@ import com.example.scmxpert.views.MapHome;
 import com.example.scmxpert.views.ShipmentDetails;
 import com.example.scmxpert.views.ShipmentHome;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -134,6 +139,8 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
                         .subscribeWith(new DisposableSingleObserver<List<Shippment>>() {
                             @Override
                             public void onSuccess(List<Shippment> notes) {
+
+
                                swipeRefresh.setRefreshing(false);
                              //   ((ShipmentHome)getActivity()).hideProgressDialog();
 
@@ -143,59 +150,89 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
 
                                 deliverdList.clear();
                                 liveList.clear();
-                                for(Shippment shippment:notes){
-                                    try {
-                                        String status = shippment.getDelivery_status();
-                                        if(status !=null){
-                                            if(!status.equals(getString(R.string.deliver)) ){
-                                                if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
-                                                    Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
-                                                    FilterItemModel itemModel = bundle.getParcelable("filter_data");
+                                if(notes.size() >0){
+                                    for(Shippment shippment:notes){
+                                        try {
+                                            String status = shippment.getDelivery_status();
+                                            if(status !=null){
+                                                if(!status.equals(getString(R.string.deliver)) ){
+                                                    if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
+                                                        Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
+                                                       ArrayList<FilterResponse> itemModel = bundle.getParcelableArrayList("filter_data");
 
-                                                    if(shippment.getRoute_form().equals(itemModel.getFrom()) ||
-                                                            shippment.getRoute_to().equals(itemModel.getTo()) ||
-                                                            shippment.getGoods_desc().equals(itemModel.getGoods()) ||
-                                                            shippment.getDevice_id().equals(itemModel.getDevice()) ||
+                                                       for(int i =0;i<itemModel.size();i++){
+                                                           FilterResponse response = (FilterResponse) itemModel.get(i);
+
+                                                           if(shippment.getShipment_id().equals(response.getShipment_id())){
+                                                               liveList.add(shippment);
+                                                           }
+
+                                                       }
+
+                                                     /*   if(shippment.getRoute_form().equals(itemModel)
+                                                               *//* || shippment.getDepartments().equals(itemModel.getDep_type())*//*
+                                                            *//*|| shippment.getDevice_id().equals(itemModel.getDevice())*//* *//* ||
                                                             shippment.getType_reference().equals(itemModel.getReference()) ||
-                                                            shippment.getDepartments().equals(itemModel.getDep_type())
-                                                            ){
+                                                            shippment.getDepartments().equals(itemModel.getDep_type())*//*
+                                                        ){
+                                                            liveList.add(shippment);
+                                                        }*/
+                                                    }else{
                                                         liveList.add(shippment);
                                                     }
-                                                }else{
-                                                    liveList.add(shippment);
                                                 }
-                                            }
-                                            else {
+                                                else {
 
-                                                if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
-                                                    Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
-                                                    FilterItemModel itemModel = bundle.getParcelable("filter_data");
+                                                    if(((ShipmentHome)getActivity()).getIntent().getExtras()!=null){
+                                                        Bundle bundle  = ((ShipmentHome)getActivity()).getIntent().getExtras();
 
-                                                    if(shippment.getRoute_form().equals(itemModel.getFrom()) ||
-                                                            shippment.getRoute_to().equals(itemModel.getTo()) ||
+                                                        ArrayList<FilterResponse> itemModel = bundle.getParcelableArrayList("filter_data");
+
+                                                        for(int i =0;i<itemModel.size();i++){
+                                                            FilterResponse response = (FilterResponse) itemModel.get(i);
+
+                                                            if(shippment.getShipment_id().equals(response.getShipment_id())){
+                                                                deliverdList.add(shippment);
+                                                            }
+
+                                                        }
+
+                                                      /*  if(shippment.getRoute_form().equals(itemModel.getFrom())
+                                                                || shippment.getRoute_to().equals(itemModel.getTo())
+                                                                || shippment.getGoods_desc().equals(itemModel.getGoods())
+                                                                || shippment.getType_reference().equals(itemModel.getReference())
+                                                                *//*|| shippment.getDepartments().equals(itemModel.getDep_type())*//*
+                                                            *//* || shippment.getDevice_id().equals(itemModel.getDevice())*//* *//*
+
                                                             shippment.getGoods_desc().equals(itemModel.getGoods()) ||
                                                             shippment.getDevice_id().equals(itemModel.getDevice()) ||
                                                             shippment.getType_reference().equals(itemModel.getReference()) ||
-                                                            shippment.getDepartments().equals(itemModel.getDep_type())
-                                                    ){
+                                                            shippment.getDepartments().equals(itemModel.getDep_type())*//*
+                                                        ){
+                                                            deliverdList.add(shippment);
+                                                        }*/
+                                                    }else {
                                                         deliverdList.add(shippment);
                                                     }
-                                                }else {
-
-                                                    deliverdList.add(shippment);
-
                                                 }
-                                                }
-                                        }else{
-                                            liveList.add(shippment);
-                                        }
+                                            }else{
+                                                liveList.add(shippment);
+                                            }
                                         }catch (Exception e){
-                                        e.printStackTrace();
+                                            e.printStackTrace();
+                                        }
                                     }
+
+                                    if(liveList.size()==0){
+                                        Snackbar.make(view, "No Data Available", Snackbar.LENGTH_LONG).show();
+                                    }
+                                    ((ShipmentHome)getActivity()).deliver_count.setText(String.valueOf(deliverdList.size()));
+                                    ((ShipmentHome)getActivity()).live_count.setText(String.valueOf(liveList.size()));
+                                    mAdapter.notifyDataSetChanged();
+                                }else{
+                                    Snackbar.make(view, "No Data Available", Snackbar.LENGTH_LONG).show();
                                 }
-                                ((ShipmentHome)getActivity()).deliver_count.setText(String.valueOf(deliverdList.size()));
-                                ((ShipmentHome)getActivity()).live_count.setText(String.valueOf(liveList.size()));
-                                mAdapter.notifyDataSetChanged();
+
                             }
 
                             @Override
@@ -204,6 +241,9 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
                                 swipeRefresh.setRefreshing(false);
                              //   ((ShipmentHome)getActivity()).hideProgressDialog();
                                 Log.e(TAG, "onError: " + e.getMessage());
+
+                                showCustomAlert();
+
                             }
                         })
 
@@ -220,6 +260,18 @@ public class LiveShipment extends Fragment implements View.OnClickListener, Swip
     public void onDestroy() {
         super.onDestroy();
         disposable.dispose();
+    }
+
+    public void showCustomAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(getString(R.string.app_name))
+                .setMessage(getString(R.string.internal_server_error))
+                .setCancelable(false)
+                .setPositiveButton("Ok", (dialog, which) -> {
+                    dialog.dismiss();
+                    getActivity().finish();
+                });
+        builder.show();
     }
 
 }

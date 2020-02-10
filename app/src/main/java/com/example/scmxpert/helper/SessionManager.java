@@ -19,7 +19,17 @@ public class SessionManager {
     public static final String USER_NAME ="user_name";
     public static final String PARTNER_NAME = "partner_name";
     public static final String CUSTOMER_ID = "customer_id";
+    public static final String CUSTOMER_NAME = "customer_name";
     public static final String TOKEN = "token";
+    public static final String FROM="from";
+    public static final String TO="to";
+    public static final String GOODS="good";
+    public static final String DATE="date";
+    public static final String SHIP_NUM="shipment_number";
+    public static final String REFERENCE="reference";
+    public static final String DEVICE="device";
+    public static final String DEPT="dept";
+
 
 
     public SessionManager(Context context){
@@ -29,12 +39,26 @@ public class SessionManager {
     }
 
     //Create Login Session
-    public void createLoginSession(String user_name,String partner,String token,String customer_id){
+    public void createLoginSession(String customer_name,String user_name,String partner,String token,String customer_id){
         editor.putBoolean(IS_LOGIN,true);
+        editor.putString(CUSTOMER_NAME,customer_name);
         editor.putString(USER_NAME,user_name);
         editor.putString(PARTNER_NAME,partner);
         editor.putString(TOKEN,token);
         editor.putString(CUSTOMER_ID,customer_id);
+        editor.commit();
+    }
+
+    public void setFilter(String from,String to,String goods,String ship_date,String ship_number,String reference,String device,String department){
+      //  editor.putBoolean(IS_LOGIN,true);
+        editor.putString(FROM,from);
+        editor.putString(TO,to);
+        editor.putString(GOODS,goods);
+        editor.putString(DATE,ship_date);
+        editor.putString(SHIP_NUM,ship_number);
+        editor.putString(REFERENCE,reference);
+        editor.putString(DEVICE,device);
+        editor.putString(DEPT,department);
         editor.commit();
     }
 
@@ -67,10 +91,29 @@ public class SessionManager {
     public HashMap<String,String> getUserDetails(){
         HashMap<String,String> user = new HashMap<String,String>();
         //user name
+        user.put(CUSTOMER_NAME,pref.getString(CUSTOMER_NAME,null));
         user.put(USER_NAME,pref.getString(USER_NAME,null));
         user.put(PARTNER_NAME,pref.getString(PARTNER_NAME,null));
         user.put(TOKEN,pref.getString(TOKEN,null));
         user.put(CUSTOMER_ID,pref.getString(CUSTOMER_ID,null));
+
+        return  user;
+    }
+
+
+    public HashMap<String,String> getFilter(){
+
+        HashMap<String,String> user = new HashMap<String,String>();
+        //user name
+        user.put(FROM,pref.getString(FROM,null));
+        user.put(TO,pref.getString(TO,null));
+        user.put(GOODS,pref.getString(GOODS,null));
+        user.put(DATE,pref.getString(DATE,null));
+        user.put(SHIP_NUM,pref.getString(DATE,null));
+        user.put(REFERENCE,pref.getString(DATE,null));
+        user.put(DEVICE,pref.getString(DATE,null));
+        user.put(DEPT,pref.getString(DATE,null));
+
 
         return  user;
     }

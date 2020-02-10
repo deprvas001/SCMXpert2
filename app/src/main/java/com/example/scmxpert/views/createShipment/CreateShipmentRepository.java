@@ -37,6 +37,8 @@ public class CreateShipmentRepository {
             public void onResponse(@NotNull Call<CreateShipmentResponse> call, @NotNull Response<CreateShipmentResponse> response) {
                 if(response.isSuccessful()){
                     responsiveLiveData.setValue(new CreateShipmentApiResponse(response.body()));
+                }else if(response.code() == 401){
+                    responsiveLiveData.setValue(new CreateShipmentApiResponse(response.code(),String.valueOf(response.errorBody())));
                 }else{
                     responsiveLiveData.setValue(null);
                 }

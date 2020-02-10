@@ -263,7 +263,7 @@ public class UpdateEvent extends BaseActivity implements View.OnClickListener , 
          case R.id.reference_type:
              if(position>0){
                  reference_id = adapterView.getSelectedItem().toString();
-                 Toast.makeText(this, reference_id, Toast.LENGTH_SHORT).show();
+             //    Toast.makeText(this, reference_id, Toast.LENGTH_SHORT).show();
              }else{
                  reference_id="";
              }
@@ -272,7 +272,7 @@ public class UpdateEvent extends BaseActivity implements View.OnClickListener , 
          case R.id.partner_spiner:
              if(position>0){
                  partner_id = adapterView.getSelectedItem().toString();
-                 Toast.makeText(this, partner_id, Toast.LENGTH_SHORT).show();
+               //  Toast.makeText(this, partner_id, Toast.LENGTH_SHORT).show();
              }else{
                  partner_id ="";
              }
@@ -320,12 +320,16 @@ public class UpdateEvent extends BaseActivity implements View.OnClickListener , 
 
         viewModel.updateEvent(updateSendRequest).observe(this, updateApiResponse -> {
             hideProgressDialog();
-            if (updateApiResponse == null) {
+            if(updateApiResponse.code == 401){
+                Toast.makeText(this, getString(R.string.session_expire), Toast.LENGTH_SHORT).show();
+                // showAlertDialog(CreateShipment.this, getString(R.string.session_expire));
+                session.logoutUser();
+                RetrofitClientInstance.setRetrofit();
+            }else if (updateApiResponse == null) {
                 // handle error here
-                showAlertDialog(UpdateEvent.this,getString(R.string.invalid_credentails));
+                showAlertDialog(UpdateEvent.this,getString(R.string.try_later));
                 return;
-            }
-            if (updateApiResponse.getError() == null) {
+            }else if (updateApiResponse.getError() == null) {
                 // call is successful
                 //  Log.i(TAG, "Data response is " + apiResponse.getPosts());
                 showCustomAlert(UpdateEvent.this,updateApiResponse.getResponse().getMessage());

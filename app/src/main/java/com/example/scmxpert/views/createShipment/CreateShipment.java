@@ -79,9 +79,11 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
     private String goods_data = "";
     private String goods_id_data = "";
     private String user_name = "";
+    private String customer_name="";
     private String partner_name = "";
     private String customer_id="";
     private String token = "";
+    private String fdate = "";
     CreateShipmentViewModel viewModel;
     private RouteSpinnerData routeSpinnerData;
     SessionManager session;
@@ -109,6 +111,7 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
         createShipmentBinding.deviceSpinner.setOnItemSelectedListener(this);
         createShipmentBinding.goodsSpinner.setOnItemSelectedListener(this);
         createShipmentBinding.deviceNumber.setOnClickListener(this);
+
         createShipmentBinding.shipmentNumber.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
@@ -245,13 +248,14 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
         session = new SessionManager(getApplicationContext());
         session.checkLogin();
         HashMap<String, String> user = session.getUserDetails();
+        customer_name = user.get(SessionManager.CUSTOMER_NAME);
         user_name = user.get(SessionManager.USER_NAME);
         partner_name = user.get(SessionManager.PARTNER_NAME);
         customer_id = user.get(SessionManager.CUSTOMER_ID);
         token = user.get(SessionManager.TOKEN);
 
         if (user_name != null) {
-            createShipmentBinding.shipmentDetails.customerName.setText(user_name);
+            createShipmentBinding.shipmentDetails.customerName.setText(customer_name);
             createShipmentBinding.shipmentDetails.partnerName.setText(partner_name);
         }
         getDDData();
@@ -415,18 +419,24 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
             shipmentRequest.setrH("");
             shipmentRequest.setDatee(timeCreate());
             shipmentRequest.setEvent("Preparation");
-            shipmentRequest.setEstimatedDeliveryDate(createShipmentBinding.expectDate.getText().toString());
+            shipmentRequest.setEstimatedDeliveryDate(fdate);
 
         viewModel = ViewModelProviders.of(this).get(CreateShipmentViewModel.class);
 
         viewModel.createShipment(token,shipmentRequest).observe(this, apiResponse -> {
 
-            if (apiResponse == null) {
+            if(apiResponse.code == 401){
+                Toast.makeText(this, getString(R.string.session_expire), Toast.LENGTH_SHORT).show();
+               // showAlertDialog(CreateShipment.this, getString(R.string.session_expire));
+                session.logoutUser();
+                RetrofitClientInstance.setRetrofit();
+            }
+            else if (apiResponse == null) {
                 hideProgressDialog();
                 // handle error here
                 showAlertDialog(CreateShipment.this, getString(R.string.try_later));
                 return;
-            }if (apiResponse.getError() == null) {
+            } else if (apiResponse.getError() == null) {
                  hideProgressDialog();
                 // call is successful
                 //  Log.i(TAG, "Data response is " + apiResponse.getPosts());
@@ -557,10 +567,13 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
                 SimpleDateFormat sd = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+                SimpleDateFormat sd1 = new SimpleDateFormat("dd-MM-yyyy");
               //  sd.setTimeZone(TimeZone.getTimeZone("UTC"));
                 final Date startDate = newDate.getTime();
-                String fdate = sd.format(startDate);
-                createShipmentBinding.expectDate.setText(fdate);
+                 fdate = sd.format(startDate);
+                String final_date = sd1.format(startDate);
+
+                createShipmentBinding.expectDate.setText(final_date);
             }
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
         mDatePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
@@ -584,9 +597,10 @@ public class CreateShipment extends BaseActivity implements View.OnClickListener
     }
 
     public void showCustomDialog(Context context, String message) {
+        String shipment_id = createShipmentBinding.shipmentDetails.internalShipmentId.getText().toString();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle((createShipmentBinding.shipmentDetails.internalShipmentId.getText().toString()))
-                .setMessage(message)
+        builder.setTitle("SCMXpert")
+                .setMessage("Shipment No: "+shipment_id+" "+message)
                 .setCancelable(false)
                 .setPositiveButton("Ok", (dialog, which) -> {
                     dialog.dismiss();

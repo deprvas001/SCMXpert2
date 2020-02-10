@@ -8,7 +8,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
 
     <uses-feature android:name="android.hardware.camera" />
@@ -21,38 +21,60 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".views.UserLogin"></activity>
+        <activity android:name=".views.SplashScreen"
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".views.UserLogin"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.MapHome"
-            android:theme="@style/AppTheme1" />
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.QrCodeScreen"
-            android:theme="@style/AppTheme1" />
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.ShipmentHome"
-            android:theme="@style/AppTheme1" />
-        <activity android:name=".views.ShipmentGraph" />
-        <activity android:name=".views.MapActivity" />
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".views.ShipmentGraph"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".views.MapActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.AddRoute"
-            android:theme="@style/AppTheme1" />
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.FilterScreen"
-            android:theme="@style/AppTheme1" />
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.createShipment.CreateShipment"
             android:theme="@style/AppTheme1"
-            android:windowSoftInputMode="stateHidden" />
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.updateEvent.UpdateEvent"
-            android:theme="@style/AppTheme1" />
+            android:theme="@style/AppTheme1"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.CompleteShipmentFill"
-            android:theme="@style/AppTheme1" />
+            android:theme="@style/AppTheme1"
+            android:windowSoftInputMode="stateHidden"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.Test"
             android:label="@string/title_activity_test"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -69,24 +91,25 @@
         <activity
             android:name=".map.Map"
             android:label="@string/title_activity_map"
-            android:theme="@style/AppTheme1" />
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.ShipmentDetails"
-            android:theme="@style/AppTheme1" />
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.HomeScreen"
-            android:theme="@style/AppTheme1" />
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.forgotPassword.ForgotPassword"
-            android:theme="@style/AppTheme1" />
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".views.login.LoginScreen"
-            android:theme="@style/AppTheme1">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:theme="@style/AppTheme1"
+            android:screenOrientation="portrait">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 

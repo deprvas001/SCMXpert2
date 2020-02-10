@@ -22,9 +22,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="20dp"
-                android:gravity="center"
+                android:layout_marginRight="?android:attr/actionBarSize"
                 android:text="@string/filter"
+                android:gravity="center"
                 android:textColor="@android:color/white"
                 android:textSize="18sp" />
 
@@ -80,7 +80,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginRight="20dp"
+                        android:layout_marginRight="5dp"
                         android:layout_weight="1"
                         android:background="@drawable/edit_background">
 
@@ -96,7 +96,7 @@
                     <RelativeLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="20dp"
+                        android:layout_marginLeft="5dp"
                         android:layout_marginRight="20dp"
                         android:layout_weight="1"
                         android:background="@drawable/edit_background">
@@ -236,7 +236,7 @@
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="15dp"
                     android:layout_marginRight="20dp"
-                    android:hint="@string/delivery_number"
+                    android:hint="@string/shipment_number"
                     android:textColorHint="@android:color/black">
 
                     <EditText
@@ -331,9 +331,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginLeft="20dp"
-                    android:layout_marginRight="20dp"
-                    android:layout_marginBottom="20dp">
+                    android:layout_margin="20dp">
 
                     <androidx.appcompat.widget.AppCompatButton
                         android:id="@+id/search_button"
@@ -355,7 +353,7 @@
                         android:layout_marginLeft="20dp"
                         android:layout_weight="1"
                         android:background="@drawable/button_second_background"
-                        android:text="@string/cancel"
+                        android:text="@string/reset"
                         android:textAllCaps="false"
                         android:textColor="@color/view_background" />
 

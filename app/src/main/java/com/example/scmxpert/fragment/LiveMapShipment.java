@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import com.example.scmxpert.R;
 import com.example.scmxpert.apiInterface.CompleteShipment;
 import com.example.scmxpert.helper.SessionManager;
+import com.example.scmxpert.model.FilterResponse;
 import com.example.scmxpert.model.ShipmentLatLong;
 import com.example.scmxpert.model.Shippment;
 import com.example.scmxpert.model.WayPoint;
@@ -98,42 +99,67 @@ public class LiveMapShipment extends Fragment implements OnMapReadyCallback {
 
                                             if(((MapHome)getActivity()).getIntent().getExtras()!=null) {
                                                 Bundle bundle = ((MapHome) getActivity()).getIntent().getExtras();
-                                                FilterItemModel  itemModel = bundle.getParcelable("filter_data");
+                                              /*  FilterItemModel  itemModel = bundle.getParcelable("filter_data");
                                               if(shippment.getRoute_form().equals(itemModel.getFrom()) ||
                                                 shippment.getRoute_to().equals(itemModel.getTo()) ||
                                                 shippment.getGoods_desc().equals(itemModel.getGoods()) ||
                                                 shippment.getType_reference().equals(itemModel.getReference())||
-                                                 shippment.getDevice_id().equals(itemModel.getDevice()) /*||
-                                                       shippment.getDepartments().equals(itemModel.getDep_type())*/ ){
+                                                 shippment.getDevice_id().equals(itemModel.getDevice()) *//*||
+                                                       shippment.getDepartments().equals(itemModel.getDep_type())*//* ){
                                                   liveList.add(shippment);
-                                              }
+                                              }*/
+
+                                                ArrayList<FilterResponse> itemModel = bundle.getParcelableArrayList("filter_data");
+
+                                                for(int i =0;i<itemModel.size();i++){
+                                                    FilterResponse response = (FilterResponse) itemModel.get(i);
+
+                                                    if(shippment.getShipment_id().equals(response.getShipment_id())){
+                                                        liveList.add(shippment);
+                                                    }
+
+                                                }
                                             }else{
                                                 liveList.add(shippment);
                                             }
 
-                                            ((MapHome) getActivity()).live_count.setText(String.valueOf(liveList.size()));
+                                         //   ((MapHome) getActivity()).live_count.setText(String.valueOf(liveList.size()));
                                         } else {
 
                                             if(((MapHome)getActivity()).getIntent().getExtras()!=null) {
                                                 Bundle bundle = ((MapHome) getActivity()).getIntent().getExtras();
-                                                FilterItemModel  itemModel = bundle.getParcelable("filter_data");
+                                              /*  FilterItemModel  itemModel = bundle.getParcelable("filter_data");
                                                 if(shippment.getRoute_form().equals(itemModel.getFrom()) ||
                                                         shippment.getRoute_to().equals(itemModel.getTo()) ||
-                                                        shippment.getGoods_desc().equals(itemModel.getGoods()) ||
-                                                        shippment.getType_reference().equals(itemModel.getReference()) ||
-                                                        shippment.getDevice_id().equals(itemModel.getDevice())
-                                                        /*shippment.getDepartments().equals(itemModel.getDep_type())*/){
+                                                        shippment.getGoods_desc().equals(itemModel.getGoods()) *//*||*//*
+                                                       *//* shippment.getType_reference().equals(itemModel.getReference()) ||
+                                                        shippment.getDevice_id().equals(itemModel.getDevice())*//*
+                                                        *//*shippment.getDepartments().equals(itemModel.getDep_type())*//*){
                                                          deliverdList.add(shippment);
+                                                }*/
+
+                                                ArrayList<FilterResponse> itemModel = bundle.getParcelableArrayList("filter_data");
+
+                                                for(int i =0;i<itemModel.size();i++){
+                                                    FilterResponse response = (FilterResponse) itemModel.get(i);
+
+                                                    if(shippment.getShipment_id().equals(response.getShipment_id())){
+                                                        deliverdList.add(shippment);
+                                                    }
+
                                                 }
                                             }else{
                                                 deliverdList.add(shippment);
                                             }
-                                            ((MapHome) getActivity()).deliver_count.setText(String.valueOf(deliverdList.size()));
+                                          //  ((MapHome) getActivity()).deliver_count.setText(String.valueOf(deliverdList.size()));
                                         }
                                     }else{
                                         liveList.add(shippment);
                                     }
                                 }
+
+                                ((MapHome) getActivity()).live_count.setText(String.valueOf(liveList.size()));
+                                ((MapHome) getActivity()).deliver_count.setText(String.valueOf(deliverdList.size()));
 
                                 List<WayPoint> userList = new ArrayList<>();
                                 for(int k=0;k<liveList.size();k++){
@@ -204,12 +230,12 @@ public class LiveMapShipment extends Fragment implements OnMapReadyCallback {
         Double init_longt = Double.parseDouble(wayPoints.get(0).getLongt());
         CameraPosition googlePlex = CameraPosition.builder()
                 .target(new LatLng(init_lat, init_longt))
-                .zoom(5)
-                .bearing(0)
+                .zoom(3)
+                .bearing(0.5f)
                 .tilt(45)
                 .build();
 
-        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex), 10000, null);
+        gMap.animateCamera(CameraUpdateFactory.newCameraPosition(googlePlex));
 
 
 

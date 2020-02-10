@@ -5,17 +5,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.example.scmxpert.R;
 import com.example.scmxpert.model.Shippment;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.MyViewHolder>{
     private List<Shippment> shipmentList;
@@ -58,13 +53,21 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.MyView
             if(shippment.getCreated_date()!=null ){
                 holder.created_date.setText(sdf1.format(sdf.parse(shippment.getCreated_date())));
             }else{
-                holder.created_date.setText("");
+                holder.created_date.setText("NA");
             }
 
-            if(shippment.getDelivery_date()!=null){
-                holder.delivery_date.setText(sdf1.format(sdf.parse(shippment.getDelivery_date())));
+           if(!shippment.getDelivery_status().equals("Delivered")){
+                if(shippment.getEst_delivery_date()!=null){
+                    holder.delivery_date.setText(sdf1.format(sdf.parse(shippment.getEst_delivery_date())));
+                }else{
+                    holder.delivery_date.setText("NA");
+                }
             }else{
-                holder.delivery_date.setText("");
+                if(shippment.getDelivery_date()!=null){
+                    holder.delivery_date.setText(sdf1.format(sdf.parse(shippment.getDelivery_date())));
+                }else{
+                    holder.delivery_date.setText("NA");
+                }
             }
 
         } catch (ParseException e) {
@@ -73,17 +76,18 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.MyView
         if(shippment.getShipment_id()!=null){
             holder.shipment_id.setText(shippment.getShipment_id());
         }else{
-            holder.shipment_id.setText("");
+            holder.shipment_id.setText("NA");
         }
         if(shippment.getRoute_form()!=null){
-            holder.from_place.setText("From-"+shippment.getRoute_form());
+
+            holder.from_place.setText(shippment.getRoute_form());
         }else{
-            holder.from_place.setText("From-");
+            holder.from_place.setText("NA");
         }
         if(shippment.getRoute_to()!=null){
-            holder.deliver_place.setText("To-"+shippment.getRoute_to());
+            holder.deliver_place.setText(shippment.getRoute_to());
         }else{
-            holder.deliver_place.setText("To-");
+            holder.deliver_place.setText("NA");
         }
 
         if(shippment.getEvent_status()!=null){
@@ -99,9 +103,8 @@ public class ShipmentAdapter extends RecyclerView.Adapter<ShipmentAdapter.MyView
             }
             holder.status.setText("Status:"+shippment.getDelivery_status());
         }else{
-            holder.status.setText("Status:");
+            holder.status.setText("Status: N/A");
         }
-
     }
 
     @Override

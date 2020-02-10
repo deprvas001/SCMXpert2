@@ -7,9 +7,18 @@ public class UserDetails {
     private String customer_Id;
     private String phone;
     private String email;
+    private String customer_Name;
 
     public String getUserName() {
         return userName;
+    }
+
+    public String getCustomer_Name() {
+        return customer_Name;
+    }
+
+    public void setCustomer_Name(String customer_Name) {
+        this.customer_Name = customer_Name;
     }
 
     public String getAdmin_Name() {

@@ -82,12 +82,22 @@ public class ShipmentHome extends BaseActivity implements View.OnClickListener, 
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.create_shipment:
-                startActivity(new Intent(ShipmentHome.this, CreateShipment.class));
+                if (isNetworkAvailable(this)) {
+                    startActivity(new Intent(ShipmentHome.this, CreateShipment.class));
+                } else {
+                    showAlertDialog(this, getString(R.string.no_connection));
+                }
+
                 break;
 
             case R.id.filter:
 
-                startActivity(new Intent(ShipmentHome.this,FilterScreen.class));
+                if (isNetworkAvailable(this)) {
+                    startActivity(new Intent(ShipmentHome.this,FilterScreen.class));
+                } else {
+                    showAlertDialog(this, getString(R.string.no_connection));
+                }
+
                 break;
 
             case R.id.logout:

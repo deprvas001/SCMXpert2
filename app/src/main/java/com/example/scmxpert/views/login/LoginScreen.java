@@ -169,8 +169,8 @@ public class LoginScreen extends BaseActivity implements View.OnClickListener {
                             @Override
                             public void onSuccess(UserDetails userDetails) {
                                 hideProgressDialog();
-                                Toast.makeText(LoginScreen.this, userDetails.getUserName(), Toast.LENGTH_SHORT).show();
-                                manager.createLoginSession(userDetails.getUserName(), userDetails.getAdmin_Name(), token,userDetails.getCustomer_Id());
+                             //   Toast.makeText(LoginScreen.this, userDetails.getUserName(), Toast.LENGTH_SHORT).show();
+                                manager.createLoginSession(userDetails.getCustomer_Name(),userDetails.getUserName(), userDetails.getUserName(), token,userDetails.getCustomer_Id());
                                 startActivity(new Intent(LoginScreen.this, ShipmentHome.class));
                                 finish();
                             }

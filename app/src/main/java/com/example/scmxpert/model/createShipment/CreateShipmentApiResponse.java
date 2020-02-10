@@ -5,11 +5,35 @@ import com.example.scmxpert.model.forgotModel.ForgotResponse;
 public class CreateShipmentApiResponse {
 
     public CreateShipmentResponse response;
+    public int code;
+    public String error_status;
+
+    public int getCode() {
+        return code;
+    }
+
+    public void setCode(int code) {
+        this.code = code;
+    }
+
+    public String getError_status() {
+        return error_status;
+    }
+
+    public void setError_status(String error_status) {
+        this.error_status = error_status;
+    }
+
     private Throwable error;
 
     public CreateShipmentApiResponse(CreateShipmentResponse response) {
         this.response = response;
         this.error = null;
+    }
+
+    public CreateShipmentApiResponse(int code,String error_status){
+        this.code = code;
+        this.error_status = error_status;
     }
 
     public CreateShipmentApiResponse(Throwable error) {

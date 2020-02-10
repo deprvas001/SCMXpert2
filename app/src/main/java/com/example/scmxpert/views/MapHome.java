@@ -1,6 +1,5 @@
 package com.example.scmxpert.views;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -31,7 +30,7 @@ import java.util.List;
 public class MapHome extends BaseActivity implements View.OnClickListener, TabLayout.OnTabSelectedListener {
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    ImageView create_shipment,filter;
+    ImageView create_shipment,filter,back;
     private FloatingActionButton fab;
     public TextView live_count,deliver_count;
     Toolbar toolbar;
@@ -39,23 +38,7 @@ public class MapHome extends BaseActivity implements View.OnClickListener, TabLa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_home);
-       /* toolbar = (Toolbar)findViewById(R.id.custom_toolbar);
-        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.back_arrow));*/
-
-        create_shipment = (ImageView)findViewById(R.id.create_shipment);
-        fab =  findViewById(R.id.fab);
-        fab.setImageResource(R.drawable.home_icon);
-        fab.setOnClickListener(this);
-        filter = (ImageView)findViewById(R.id.filter);
-        filter.setOnClickListener(this);
-        create_shipment.setOnClickListener(this);
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        setupViewPager(viewPager);
-
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-        tabLayout.addOnTabSelectedListener(this);
-
+        initializeView();
         setupTabIcons();
     }
 
@@ -80,16 +63,30 @@ public class MapHome extends BaseActivity implements View.OnClickListener, TabLa
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.create_shipment:
-                startActivity(new Intent(this, CreateShipment.class));
+                if (isNetworkAvailable(this)) {
+                    startActivity(new Intent(this, CreateShipment.class));
+                } else {
+                    showAlertDialog(this, getString(R.string.no_connection));
+                }
+
                 break;
 
             case R.id.filter:
-                Intent intent = new Intent(this,FilterScreen.class);
-                intent.putExtra("tag","2");
-                startActivity(intent);
+                if (isNetworkAvailable(this)) {
+                    Intent intent = new Intent(this,FilterScreen.class);
+                    intent.putExtra("tag","2");
+                    startActivity(intent);
+                } else {
+                    showAlertDialog(this, getString(R.string.no_connection));
+                }
+
                 break;
 
             case R.id.fab:
+                finish();
+                break;
+
+            case R.id.back:
                 finish();
                 break;
         }
@@ -174,13 +171,35 @@ public class MapHome extends BaseActivity implements View.OnClickListener, TabLa
         finish();
     }
 
-    /*@Override
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }*/
+    }
+
+    private void initializeView(){
+      /*  toolbar = (Toolbar)findViewById(R.id.custom_toolbar);
+        toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.back_arrow));
+        setSupportActionBar(toolbar);*/
+        back = (ImageView)findViewById(R.id.back);
+        create_shipment = (ImageView)findViewById(R.id.create_shipment);
+        fab =  findViewById(R.id.fab);
+        fab.setImageResource(R.drawable.home_icon);
+        fab.setOnClickListener(this);
+        filter = (ImageView)findViewById(R.id.filter);
+        filter.setOnClickListener(this);
+        create_shipment.setOnClickListener(this);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+        tabLayout.addOnTabSelectedListener(this);
+        back.setOnClickListener(this);
+    }
+
 
 }
